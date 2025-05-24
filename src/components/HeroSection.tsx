@@ -1,8 +1,41 @@
 
 import { Button } from '@/components/ui/button';
 import { ArrowDown } from 'lucide-react';
+import { Carousel, CarouselContent, CarouselItem } from '@/components/ui/carousel';
+import { useEffect, useState } from 'react';
+
+const heroImages = [
+  {
+    src: "https://images.unsplash.com/photo-1721322800607-8c38375eef04?auto=format&fit=crop&w=800&q=80",
+    alt: "Beautiful customized living room interior"
+  },
+  {
+    src: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=800&q=80",
+    alt: "Modern kitchen design"
+  },
+  {
+    src: "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=800&q=80",
+    alt: "Elegant bedroom interior"
+  },
+  {
+    src: "https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?auto=format&fit=crop&w=800&q=80",
+    alt: "Stylish home office space"
+  }
+];
 
 const HeroSection = () => {
+  const [api, setApi] = useState<any>();
+
+  useEffect(() => {
+    if (!api) return;
+
+    const autoSlide = setInterval(() => {
+      api.scrollNext();
+    }, 4000); // Change image every 4 seconds
+
+    return () => clearInterval(autoSlide);
+  }, [api]);
+
   return (
     <section className="relative bg-gradient-to-br from-blue-50 via-white to-orange-50 min-h-screen flex items-center">
       <div className="container mx-auto px-6 lg:px-8">
@@ -58,11 +91,26 @@ const HeroSection = () => {
           <div className="relative lg:h-[600px] animate-fade-in">
             <div className="absolute inset-0 bg-gradient-to-r from-blue-200 to-orange-200 rounded-3xl transform rotate-3"></div>
             <div className="relative bg-white rounded-3xl shadow-2xl p-8 transform -rotate-1 hover:rotate-0 transition-transform duration-500">
-              <img 
-                src="https://images.unsplash.com/photo-1721322800607-8c38375eef04?auto=format&fit=crop&w=800&q=80" 
-                alt="Beautiful customized living room interior" 
-                className="w-full h-full object-cover rounded-2xl"
-              />
+              <Carousel
+                setApi={setApi}
+                className="w-full h-full"
+                opts={{
+                  align: "start",
+                  loop: true,
+                }}
+              >
+                <CarouselContent>
+                  {heroImages.map((image, index) => (
+                    <CarouselItem key={index}>
+                      <img 
+                        src={image.src} 
+                        alt={image.alt} 
+                        className="w-full h-full object-cover rounded-2xl"
+                      />
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+              </Carousel>
               <div className="absolute -bottom-4 -right-4 bg-white rounded-2xl shadow-xl p-6 border-l-4 border-blue-500">
                 <div className="text-sm font-semibold text-gray-700">Virtual Consultation</div>
                 <div className="text-xs text-gray-500">Book instantly</div>
