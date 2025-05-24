@@ -1,4 +1,3 @@
-
 import { Button } from '@/components/ui/button';
 import { ArrowDown } from 'lucide-react';
 import { Carousel, CarouselContent, CarouselItem } from '@/components/ui/carousel';
@@ -7,19 +6,33 @@ import { useEffect, useState } from 'react';
 const heroImages = [
   {
     src: "https://images.unsplash.com/photo-1721322800607-8c38375eef04?auto=format&fit=crop&w=800&q=80",
-    alt: "Beautiful customized living room interior"
+    alt: "Beautiful customized living room interior",
+    category: "House Decor"
   },
   {
-    src: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=800&q=80",
-    alt: "Modern kitchen design"
+    src: "https://images.unsplash.com/photo-1489824904134-891ab64532f1?auto=format&fit=crop&w=800&q=80",
+    alt: "Custom automobile modification",
+    category: "Automobile"
   },
   {
-    src: "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=800&q=80",
-    alt: "Elegant bedroom interior"
+    src: "https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?auto=format&fit=crop&w=800&q=80",
+    alt: "Personalized gifts and crafts",
+    category: "Gifts"
   },
   {
-    src: "https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?auto=format&fit=crop&w=800&q=80",
-    alt: "Stylish home office space"
+    src: "https://images.unsplash.com/photo-1434389677669-e08b4cac3105?auto=format&fit=crop&w=800&q=80",
+    alt: "Custom fashion and women wear",
+    category: "Women Wear"
+  },
+  {
+    src: "https://images.unsplash.com/photo-1541888946425-d81bb19240f5?auto=format&fit=crop&w=800&q=80",
+    alt: "Construction and architectural services",
+    category: "Construction"
+  },
+  {
+    src: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?auto=format&fit=crop&w=800&q=80",
+    alt: "Technology and other services",
+    category: "More Services"
   }
 ];
 
