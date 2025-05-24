@@ -1,5 +1,7 @@
 
 import { Card } from '@/components/ui/card';
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
+import { useEffect, useState } from 'react';
 
 const categories = [
   {
@@ -41,6 +43,18 @@ const categories = [
 ];
 
 const CategoryGrid = () => {
+  const [api, setApi] = useState<any>();
+
+  useEffect(() => {
+    if (!api) return;
+
+    const autoSlide = setInterval(() => {
+      api.scrollNext();
+    }, 3000);
+
+    return () => clearInterval(autoSlide);
+  }, [api]);
+
   return (
     <section className="py-20 bg-gray-50">
       <div className="container mx-auto px-6 lg:px-8">
@@ -54,28 +68,40 @@ const CategoryGrid = () => {
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {categories.map((category, index) => (
-            <Card 
-              key={category.title}
-              className="group relative overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:scale-105 cursor-pointer"
-              style={{ animationDelay: `${index * 100}ms` }}
-            >
-              <div className="relative h-64">
-                <img 
-                  src={category.image} 
-                  alt={category.title}
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                />
-                <div className={`absolute inset-0 bg-gradient-to-t ${category.color} opacity-80 group-hover:opacity-90 transition-opacity duration-300`}></div>
-                <div className="absolute inset-0 flex flex-col justify-end p-6 text-white">
-                  <h3 className="text-2xl font-bold mb-2">{category.title}</h3>
-                  <p className="text-white/90 text-sm leading-relaxed">{category.description}</p>
-                </div>
-              </div>
-            </Card>
-          ))}
-        </div>
+        <Carousel
+          setApi={setApi}
+          className="w-full max-w-7xl mx-auto"
+          opts={{
+            align: "start",
+            loop: true,
+          }}
+        >
+          <CarouselContent className="-ml-2 md:-ml-4">
+            {categories.map((category, index) => (
+              <CarouselItem key={category.title} className="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3">
+                <Card 
+                  className="group relative overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:scale-105 cursor-pointer h-64"
+                  style={{ animationDelay: `${index * 100}ms` }}
+                >
+                  <div className="relative h-full">
+                    <img 
+                      src={category.image} 
+                      alt={category.title}
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                    />
+                    <div className={`absolute inset-0 bg-gradient-to-t ${category.color} opacity-80 group-hover:opacity-90 transition-opacity duration-300`}></div>
+                    <div className="absolute inset-0 flex flex-col justify-end p-6 text-white">
+                      <h3 className="text-2xl font-bold mb-2">{category.title}</h3>
+                      <p className="text-white/90 text-sm leading-relaxed">{category.description}</p>
+                    </div>
+                  </div>
+                </Card>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          <CarouselPrevious className="hidden md:flex" />
+          <CarouselNext className="hidden md:flex" />
+        </Carousel>
       </div>
     </section>
   );

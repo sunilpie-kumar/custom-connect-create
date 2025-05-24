@@ -10,13 +10,13 @@ const HeroSection = () => {
           <div className="space-y-8 animate-fade-in">
             <div className="space-y-4">
               <h1 className="text-5xl lg:text-7xl font-bold text-gray-900 leading-tight">
-                Find Your Perfect
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-orange-500">
-                  {" "}Customization
+                  Kustom
                 </span>
-                <br />
-                Partner
               </h1>
+              <p className="text-2xl lg:text-3xl font-semibold text-gray-700 mb-6">
+                Kustomize your life
+              </p>
               <p className="text-xl text-gray-600 max-w-2xl">
                 Connect with verified businesses across home decor, automobiles, gifts, fashion, and construction. 
                 Get personalized solutions through seamless virtual consultations.
