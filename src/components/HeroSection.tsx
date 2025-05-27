@@ -2,6 +2,7 @@ import { Button } from '@/components/ui/button';
 import { ArrowDown } from 'lucide-react';
 import { Carousel, CarouselContent, CarouselItem } from '@/components/ui/carousel';
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const heroImages = [
   {
@@ -38,6 +39,7 @@ const heroImages = [
 
 const HeroSection = () => {
   const [api, setApi] = useState<any>();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!api) return;
@@ -79,6 +81,7 @@ const HeroSection = () => {
               <Button 
                 variant="outline" 
                 size="lg"
+                onClick={() => navigate('/b2b')}
                 className="border-2 border-orange-500 text-orange-600 hover:bg-orange-50 px-8 py-4 text-lg font-semibold rounded-xl transition-all duration-300"
               >
                 Join as Provider

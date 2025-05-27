@@ -1,7 +1,10 @@
 
 import { Button } from '@/components/ui/button';
+import { useNavigate } from 'react-router-dom';
 
 const CTASection = () => {
+  const navigate = useNavigate();
+
   return (
     <section className="py-20 bg-gradient-to-r from-blue-600 to-orange-500">
       <div className="container mx-auto px-6 lg:px-8 text-center">
@@ -26,9 +29,10 @@ const CTASection = () => {
             <Button 
               variant="outline"
               size="lg"
+              onClick={() => navigate('/b2b')}
               className="border-2 border-white text-white hover:bg-white hover:text-blue-600 px-8 py-4 text-lg font-semibold rounded-xl transition-all duration-300"
             >
-              Learn More
+              Join as Provider
             </Button>
           </div>
           
