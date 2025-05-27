@@ -2,16 +2,30 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { ArrowLeft } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import BusinessForm from '@/components/BusinessForm';
 import BusinessHistory from '@/components/BusinessHistory';
 
 const B2B = () => {
   const [activeTab, setActiveTab] = useState('form');
+  const navigate = useNavigate();
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-orange-50">
       <div className="container mx-auto px-6 py-8">
         <div className="max-w-6xl mx-auto">
+          <div className="mb-6">
+            <Button 
+              variant="outline" 
+              onClick={() => navigate('/')}
+              className="flex items-center gap-2 hover:bg-gray-50"
+            >
+              <ArrowLeft size={16} />
+              Back to Home
+            </Button>
+          </div>
+
           <div className="text-center mb-8">
             <h1 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
               Welcome to <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-orange-500">Kustom</span> Business
