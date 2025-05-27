@@ -21,6 +21,7 @@ const categories = [
 const BusinessForm = () => {
   const [formData, setFormData] = useState({
     name: '',
+    email: '',
     businessName: '',
     category: '',
     gstNumber: '',
@@ -71,6 +72,18 @@ const BusinessForm = () => {
             </div>
 
             <div className="space-y-2">
+              <Label htmlFor="email">Email Address</Label>
+              <Input
+                id="email"
+                type="email"
+                value={formData.email}
+                onChange={(e) => handleInputChange('email', e.target.value)}
+                placeholder="Enter your email address"
+                required
+              />
+            </div>
+
+            <div className="space-y-2">
               <Label htmlFor="businessName">Business Name</Label>
               <Input
                 id="businessName"
@@ -97,7 +110,7 @@ const BusinessForm = () => {
               </Select>
             </div>
 
-            <div className="space-y-2">
+            <div className="space-y-2 md:col-span-2">
               <Label htmlFor="gstNumber">GST Number</Label>
               <Input
                 id="gstNumber"
