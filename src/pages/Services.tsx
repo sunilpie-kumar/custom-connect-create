@@ -3,11 +3,14 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import ServiceCard from '@/components/ServiceCard';
-import AuthModal from '@/components/AuthModal';
+import RealAuthModal from '@/components/RealAuthModal';
 import ChatModal from '@/components/ChatModal';
 import BookingModal from '@/components/BookingModal';
 import { ArrowLeft, Search, Filter, User, LogOut } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/contexts/AuthContext';
+import { supabase, ServiceProvider } from '@/lib/supabase';
+import { useToast } from '@/hooks/use-toast';
 
 const mockProviders = [
   {
@@ -118,27 +121,16 @@ const mockProviders = [
 
 const categories = ['All', 'House Decor', 'Automobile', 'Gifts', 'Women Wear', 'Construction', 'Technology'];
 
-interface ServiceProvider {
-  id: string;
-  name: string;
-  businessName: string;
-  category: string;
-  rating: number;
-  reviewCount: number;
-  location: string;
-  image: string;
-  description: string;
-  price: string;
-  verified: boolean;
-}
-
 const Services = () => {
   const navigate = useNavigate();
+  const { user, profile, signOut, loading: authLoading } = useAuth();
+  const { toast } = useToast();
+  
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
-  const [filteredProviders, setFilteredProviders] = useState(mockProviders);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [user, setUser] = useState<any>(null);
+  const [providers, setProviders] = useState<ServiceProvider[]>([]);
+  const [filteredProviders, setFilteredProviders] = useState<ServiceProvider[]>([]);
+  const [loading, setLoading] = useState(true);
   
   // Modal states
   const [showAuthModal, setShowAuthModal] = useState(false);
@@ -147,14 +139,40 @@ const Services = () => {
   const [selectedProvider, setSelectedProvider] = useState<ServiceProvider | null>(null);
 
   useEffect(() => {
-    const authStatus = localStorage.getItem('isAuthenticated');
-    const userData = localStorage.getItem('user');
-    
-    if (authStatus === 'true' && userData) {
-      setIsAuthenticated(true);
-      setUser(JSON.parse(userData));
-    }
+    fetchProviders();
   }, []);
+
+  const fetchProviders = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('service_providers')
+        .select(`
+          *,
+          profiles (
+            full_name,
+            avatar_url
+          )
+        `);
+
+      if (error) throw error;
+
+      // If no data from Supabase, use mock data
+      if (!data || data.length === 0) {
+        setProviders(mockProviders as any);
+        setFilteredProviders(mockProviders as any);
+      } else {
+        setProviders(data);
+        setFilteredProviders(data);
+      }
+    } catch (error: any) {
+      console.error('Error fetching providers:', error);
+      // Fallback to mock data
+      setProviders(mockProviders as any);
+      setFilteredProviders(mockProviders as any);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleSearch = (term: string) => {
     setSearchTerm(term);
@@ -167,7 +185,7 @@ const Services = () => {
   };
 
   const filterProviders = (term: string, category: string) => {
-    let filtered = mockProviders;
+    let filtered = providers;
     
     if (category !== 'All') {
       filtered = filtered.filter(provider => provider.category === category);
@@ -175,9 +193,9 @@ const Services = () => {
     
     if (term) {
       filtered = filtered.filter(provider => 
-        provider.businessName.toLowerCase().includes(term.toLowerCase()) ||
+        provider.business_name.toLowerCase().includes(term.toLowerCase()) ||
         provider.category.toLowerCase().includes(term.toLowerCase()) ||
-        provider.name.toLowerCase().includes(term.toLowerCase())
+        (provider.profiles?.full_name || '').toLowerCase().includes(term.toLowerCase())
       );
     }
     
@@ -185,7 +203,7 @@ const Services = () => {
   };
 
   const handleChatClick = (provider: ServiceProvider) => {
-    if (!isAuthenticated) {
+    if (!user) {
       setShowAuthModal(true);
       return;
     }
@@ -194,7 +212,7 @@ const Services = () => {
   };
 
   const handleCallClick = (provider: ServiceProvider) => {
-    if (!isAuthenticated) {
+    if (!user) {
       setShowAuthModal(true);
       return;
     }
@@ -202,20 +220,39 @@ const Services = () => {
     setShowBookingModal(true);
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem('isAuthenticated');
-    localStorage.removeItem('user');
-    setIsAuthenticated(false);
-    setUser(null);
+  const handleLogout = async () => {
+    try {
+      await signOut();
+      toast({
+        title: "Signed out",
+        description: "You've been signed out successfully.",
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: "Failed to sign out. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleAuthenticated = () => {
-    const userData = localStorage.getItem('user');
-    if (userData) {
-      setIsAuthenticated(true);
-      setUser(JSON.parse(userData));
-    }
+    toast({
+      title: "Welcome!",
+      description: "You're now signed in and can access all features.",
+    });
   };
+
+  if (authLoading || loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading services...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -233,11 +270,11 @@ const Services = () => {
               Back to Home
             </Button>
 
-            {isAuthenticated ? (
+            {user ? (
               <div className="flex items-center gap-4">
                 <div className="flex items-center gap-2">
                   <User className="w-4 h-4" />
-                  <span className="text-sm">Welcome, {user?.name}</span>
+                  <span className="text-sm">Welcome, {profile?.full_name || user.email}</span>
                 </div>
                 <Button variant="outline" size="sm" onClick={handleLogout}>
                   <LogOut className="w-4 h-4 mr-2" />
@@ -317,7 +354,7 @@ const Services = () => {
       </div>
 
       {/* Modals */}
-      <AuthModal 
+      <RealAuthModal 
         isOpen={showAuthModal}
         onClose={() => setShowAuthModal(false)}
         onAuthenticated={handleAuthenticated}
