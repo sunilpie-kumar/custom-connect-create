@@ -1,3 +1,4 @@
+
 import { Button } from '@/components/ui/button';
 import { ArrowDown } from 'lucide-react';
 import { Carousel, CarouselContent, CarouselItem } from '@/components/ui/carousel';
@@ -74,6 +75,7 @@ const HeroSection = () => {
             <div className="flex flex-col sm:flex-row gap-4">
               <Button 
                 size="lg" 
+                onClick={() => navigate('/services')}
                 className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
               >
                 Find Services
@@ -127,7 +129,10 @@ const HeroSection = () => {
                   ))}
                 </CarouselContent>
               </Carousel>
-              <div className="absolute -bottom-4 -right-4 bg-white rounded-2xl shadow-xl p-6 border-l-4 border-blue-500">
+              <div 
+                className="absolute -bottom-4 -right-4 bg-white rounded-2xl shadow-xl p-6 border-l-4 border-blue-500 cursor-pointer hover:shadow-2xl transition-shadow"
+                onClick={() => navigate('/services')}
+              >
                 <div className="text-sm font-semibold text-gray-700">Virtual Consultation</div>
                 <div className="text-xs text-gray-500">Book instantly</div>
               </div>
