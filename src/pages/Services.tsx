@@ -1,10 +1,12 @@
-
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import ServiceCard from '@/components/ServiceCard';
-import { ArrowLeft, Search, Filter } from 'lucide-react';
+import AuthModal from '@/components/AuthModal';
+import ChatModal from '@/components/ChatModal';
+import BookingModal from '@/components/BookingModal';
+import { ArrowLeft, Search, Filter, User, LogOut } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const mockProviders = [
@@ -116,11 +118,43 @@ const mockProviders = [
 
 const categories = ['All', 'House Decor', 'Automobile', 'Gifts', 'Women Wear', 'Construction', 'Technology'];
 
+interface ServiceProvider {
+  id: string;
+  name: string;
+  businessName: string;
+  category: string;
+  rating: number;
+  reviewCount: number;
+  location: string;
+  image: string;
+  description: string;
+  price: string;
+  verified: boolean;
+}
+
 const Services = () => {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [filteredProviders, setFilteredProviders] = useState(mockProviders);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [user, setUser] = useState<any>(null);
+  
+  // Modal states
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [showChatModal, setShowChatModal] = useState(false);
+  const [showBookingModal, setShowBookingModal] = useState(false);
+  const [selectedProvider, setSelectedProvider] = useState<ServiceProvider | null>(null);
+
+  useEffect(() => {
+    const authStatus = localStorage.getItem('isAuthenticated');
+    const userData = localStorage.getItem('user');
+    
+    if (authStatus === 'true' && userData) {
+      setIsAuthenticated(true);
+      setUser(JSON.parse(userData));
+    }
+  }, []);
 
   const handleSearch = (term: string) => {
     setSearchTerm(term);
@@ -150,12 +184,45 @@ const Services = () => {
     setFilteredProviders(filtered);
   };
 
+  const handleChatClick = (provider: ServiceProvider) => {
+    if (!isAuthenticated) {
+      setShowAuthModal(true);
+      return;
+    }
+    setSelectedProvider(provider);
+    setShowChatModal(true);
+  };
+
+  const handleCallClick = (provider: ServiceProvider) => {
+    if (!isAuthenticated) {
+      setShowAuthModal(true);
+      return;
+    }
+    setSelectedProvider(provider);
+    setShowBookingModal(true);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('isAuthenticated');
+    localStorage.removeItem('user');
+    setIsAuthenticated(false);
+    setUser(null);
+  };
+
+  const handleAuthenticated = () => {
+    const userData = localStorage.getItem('user');
+    if (userData) {
+      setIsAuthenticated(true);
+      setUser(JSON.parse(userData));
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <div className="bg-white shadow-sm border-b">
         <div className="container mx-auto px-6 lg:px-8 py-4">
-          <div className="flex items-center gap-4 mb-4">
+          <div className="flex items-center justify-between gap-4 mb-4">
             <Button 
               variant="ghost" 
               size="sm"
@@ -165,6 +232,23 @@ const Services = () => {
               <ArrowLeft className="w-4 h-4" />
               Back to Home
             </Button>
+
+            {isAuthenticated ? (
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2">
+                  <User className="w-4 h-4" />
+                  <span className="text-sm">Welcome, {user?.name}</span>
+                </div>
+                <Button variant="outline" size="sm" onClick={handleLogout}>
+                  <LogOut className="w-4 h-4 mr-2" />
+                  Logout
+                </Button>
+              </div>
+            ) : (
+              <Button onClick={() => setShowAuthModal(true)}>
+                Sign In
+              </Button>
+            )}
           </div>
           
           <div>
@@ -215,7 +299,12 @@ const Services = () => {
         {/* Service providers grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {filteredProviders.map((provider) => (
-            <ServiceCard key={provider.id} provider={provider} />
+            <ServiceCard 
+              key={provider.id} 
+              provider={provider}
+              onChatClick={handleChatClick}
+              onCallClick={handleCallClick}
+            />
           ))}
         </div>
 
@@ -226,6 +315,25 @@ const Services = () => {
           </div>
         )}
       </div>
+
+      {/* Modals */}
+      <AuthModal 
+        isOpen={showAuthModal}
+        onClose={() => setShowAuthModal(false)}
+        onAuthenticated={handleAuthenticated}
+      />
+      
+      <ChatModal
+        isOpen={showChatModal}
+        onClose={() => setShowChatModal(false)}
+        provider={selectedProvider}
+      />
+      
+      <BookingModal
+        isOpen={showBookingModal}
+        onClose={() => setShowBookingModal(false)}
+        provider={selectedProvider}
+      />
     </div>
   );
 };

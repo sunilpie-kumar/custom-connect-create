@@ -1,7 +1,7 @@
 
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Star, MapPin, Calendar, Video } from 'lucide-react';
+import { Star, MapPin, Calendar, MessageCircle, Phone } from 'lucide-react';
 
 interface ServiceProvider {
   id: string;
@@ -19,9 +19,11 @@ interface ServiceProvider {
 
 interface ServiceCardProps {
   provider: ServiceProvider;
+  onChatClick: (provider: ServiceProvider) => void;
+  onCallClick: (provider: ServiceProvider) => void;
 }
 
-const ServiceCard = ({ provider }: ServiceCardProps) => {
+const ServiceCard = ({ provider, onChatClick, onCallClick }: ServiceCardProps) => {
   return (
     <Card className="group hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 overflow-hidden">
       <div className="relative">
@@ -66,13 +68,22 @@ const ServiceCard = ({ provider }: ServiceCardProps) => {
         <div className="flex items-center justify-between pt-2">
           <span className="text-lg font-bold text-blue-600">{provider.price}</span>
           <div className="flex gap-2">
-            <Button size="sm" variant="outline" className="flex items-center gap-1">
-              <Calendar className="w-4 h-4" />
-              Book
+            <Button 
+              size="sm" 
+              variant="outline" 
+              className="flex items-center gap-1"
+              onClick={() => onCallClick(provider)}
+            >
+              <Phone className="w-4 h-4" />
+              Call
             </Button>
-            <Button size="sm" className="flex items-center gap-1 bg-orange-500 hover:bg-orange-600">
-              <Video className="w-4 h-4" />
-              Video Call
+            <Button 
+              size="sm" 
+              className="flex items-center gap-1 bg-orange-500 hover:bg-orange-600"
+              onClick={() => onChatClick(provider)}
+            >
+              <MessageCircle className="w-4 h-4" />
+              Chat
             </Button>
           </div>
         </div>
