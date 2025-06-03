@@ -17,7 +17,10 @@ import {
   Briefcase,
   Palette,
   TrendingUp,
-  CheckCircle
+  CheckCircle,
+  UserPlus,
+  Shield,
+  Award
 } from 'lucide-react';
 
 const Dashboard = () => {
@@ -29,12 +32,12 @@ const Dashboard = () => {
   ];
 
   const serviceCategories = [
-    { icon: Home, label: 'Home Services', count: '120+ services', color: 'text-blue-600', bg: 'bg-blue-100' },
-    { icon: Wrench, label: 'Repair & Maintenance', count: '85+ services', color: 'text-green-600', bg: 'bg-green-100' },
-    { icon: Car, label: 'Automotive', count: '45+ services', color: 'text-red-600', bg: 'bg-red-100' },
-    { icon: Heart, label: 'Health & Wellness', count: '95+ services', color: 'text-pink-600', bg: 'bg-pink-100' },
-    { icon: Briefcase, label: 'Business Services', count: '60+ services', color: 'text-indigo-600', bg: 'bg-indigo-100' },
-    { icon: Palette, label: 'Creative Services', count: '75+ services', color: 'text-purple-600', bg: 'bg-purple-100' }
+    { icon: Home, label: 'Home Services', count: '120+ providers', color: 'text-blue-600', bg: 'bg-blue-100' },
+    { icon: Wrench, label: 'Repair & Maintenance', count: '85+ providers', color: 'text-green-600', bg: 'bg-green-100' },
+    { icon: Car, label: 'Automotive', count: '45+ providers', color: 'text-red-600', bg: 'bg-red-100' },
+    { icon: Heart, label: 'Health & Wellness', count: '95+ providers', color: 'text-pink-600', bg: 'bg-pink-100' },
+    { icon: Briefcase, label: 'Business Services', count: '60+ providers', color: 'text-indigo-600', bg: 'bg-indigo-100' },
+    { icon: Palette, label: 'Creative Services', count: '75+ providers', color: 'text-purple-600', bg: 'bg-purple-100' }
   ];
 
   const upcomingAppointments = [
@@ -59,10 +62,43 @@ const Dashboard = () => {
   ];
 
   const recentActivity = [
-    { text: 'House cleaning service completed - Rated 5 stars', icon: CheckCircle, color: 'text-green-600' },
+    { text: 'Service completed - House cleaning by Sarah Johnson', icon: CheckCircle, color: 'text-green-600' },
     { text: 'New message from Mike Wilson (Plumber)', icon: MessageCircle, color: 'text-blue-600' },
-    { text: 'Booking confirmed for Car Wash service', icon: Calendar, color: 'text-emerald-600' },
-    { text: 'Profile updated successfully', icon: User, color: 'text-orange-600' }
+    { text: 'Booking confirmed with AutoClean Pro', icon: Calendar, color: 'text-emerald-600' },
+    { text: 'Payment received for completed service', icon: User, color: 'text-orange-600' }
+  ];
+
+  const newProviders = [
+    {
+      name: 'Elena Rodriguez',
+      service: 'Interior Design',
+      location: 'Downtown',
+      rating: 'New',
+      experience: '8+ years',
+      specialties: ['Modern Design', 'Space Planning'],
+      joinedDate: '2 days ago',
+      verified: true
+    },
+    {
+      name: 'TechFix Solutions',
+      service: 'Computer Repair',
+      location: 'Tech District',
+      rating: 'New',
+      experience: '5+ years',
+      specialties: ['Hardware Repair', 'Data Recovery'],
+      joinedDate: '1 week ago',
+      verified: true
+    },
+    {
+      name: 'Green Thumb Landscaping',
+      service: 'Landscaping',
+      location: 'Suburban Area',
+      rating: 'New',
+      experience: '10+ years',
+      specialties: ['Garden Design', 'Tree Care'],
+      joinedDate: '3 days ago',
+      verified: false
+    }
   ];
 
   return (
@@ -75,20 +111,20 @@ const Dashboard = () => {
               <h1 className="text-3xl font-bold bg-gradient-to-r from-slate-900 via-blue-900 to-indigo-900 bg-clip-text text-transparent">
                 Welcome back, John!
               </h1>
-              <p className="text-slate-600 mt-1">Here's what's happening with your services</p>
+              <p className="text-slate-600 mt-1">Discover trusted service providers in your area</p>
             </div>
             <div className="flex space-x-6">
               <div className="text-center p-4 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl">
                 <div className="text-2xl font-bold text-blue-600">12</div>
-                <div className="text-sm text-slate-600">Total Bookings</div>
+                <div className="text-sm text-slate-600">Services Booked</div>
               </div>
               <div className="text-center p-4 bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-xl">
                 <div className="text-2xl font-bold text-emerald-600">3</div>
-                <div className="text-sm text-slate-600">This Month</div>
+                <div className="text-sm text-slate-600">Active Requests</div>
               </div>
               <div className="text-center p-4 bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl">
                 <div className="text-2xl font-bold text-purple-600">4.8</div>
-                <div className="text-sm text-slate-600">Avg Rating</div>
+                <div className="text-sm text-slate-600">Your Rating</div>
               </div>
             </div>
           </div>
@@ -126,7 +162,7 @@ const Dashboard = () => {
             {/* Service Categories */}
             <Card className="border-0 shadow-lg bg-white/70 backdrop-blur-sm">
               <CardHeader className="pb-4">
-                <CardTitle className="text-xl text-slate-800">Browse Services</CardTitle>
+                <CardTitle className="text-xl text-slate-800">Browse Service Categories</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -208,41 +244,49 @@ const Dashboard = () => {
               </CardContent>
             </Card>
 
-            {/* Recommendations */}
+            {/* New Providers */}
             <Card className="border-0 shadow-lg bg-white/70 backdrop-blur-sm">
               <CardHeader className="pb-4">
                 <CardTitle className="flex items-center space-x-2 text-xl text-slate-800">
-                  <Star className="h-5 w-5 text-yellow-500" />
-                  <span>Recommended for You</span>
+                  <UserPlus className="h-5 w-5 text-green-600" />
+                  <span>New Providers</span>
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  <div className="p-4 border-0 rounded-xl bg-white/80 hover:bg-white hover:shadow-md transition-all duration-200">
-                    <h4 className="font-semibold text-slate-800">Deep House Cleaning</h4>
-                    <p className="text-sm text-slate-600 mt-1">Professional deep cleaning service</p>
-                    <div className="flex items-center justify-between mt-3">
-                      <span className="text-sm font-medium text-emerald-600 bg-emerald-50 px-2 py-1 rounded-lg">$120-180</span>
-                      <div className="flex items-center space-x-1">
-                        <Star className="h-4 w-4 text-yellow-400 fill-current" />
-                        <span className="text-sm font-medium text-slate-600">4.9</span>
+                  {newProviders.map((provider, index) => (
+                    <div key={index} className="p-4 border-0 rounded-xl bg-white/80 hover:bg-white hover:shadow-md transition-all duration-200">
+                      <div className="flex justify-between items-start mb-3">
+                        <div className="flex items-center space-x-2">
+                          <h4 className="font-semibold text-slate-800">{provider.name}</h4>
+                          {provider.verified && (
+                            <Shield className="h-4 w-4 text-blue-600" />
+                          )}
+                        </div>
+                        <span className="text-xs text-slate-500">{provider.joinedDate}</span>
+                      </div>
+                      <p className="text-sm text-slate-600 mb-2">{provider.service} • {provider.location}</p>
+                      <p className="text-xs text-slate-500 mb-3">{provider.experience} experience</p>
+                      <div className="flex flex-wrap gap-1 mb-3">
+                        {provider.specialties.map((specialty, i) => (
+                          <span key={i} className="text-xs bg-slate-100 text-slate-600 px-2 py-1 rounded-lg">
+                            {specialty}
+                          </span>
+                        ))}
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-medium text-green-600 bg-green-50 px-2 py-1 rounded-lg">
+                          {provider.rating}
+                        </span>
+                        <Button variant="outline" size="sm" className="text-xs">
+                          View Profile
+                        </Button>
                       </div>
                     </div>
-                  </div>
-                  <div className="p-4 border-0 rounded-xl bg-white/80 hover:bg-white hover:shadow-md transition-all duration-200">
-                    <h4 className="font-semibold text-slate-800">Lawn Maintenance</h4>
-                    <p className="text-sm text-slate-600 mt-1">Regular lawn care and maintenance</p>
-                    <div className="flex items-center justify-between mt-3">
-                      <span className="text-sm font-medium text-emerald-600 bg-emerald-50 px-2 py-1 rounded-lg">$80-120</span>
-                      <div className="flex items-center space-x-1">
-                        <Star className="h-4 w-4 text-yellow-400 fill-current" />
-                        <span className="text-sm font-medium text-slate-600">4.7</span>
-                      </div>
-                    </div>
-                  </div>
+                  ))}
                 </div>
-                <Button className="w-full mt-6 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white border-0 shadow-md hover:shadow-lg transition-all duration-200">
-                  Explore More Services
+                <Button className="w-full mt-6 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white border-0 shadow-md hover:shadow-lg transition-all duration-200">
+                  Explore All New Providers
                 </Button>
               </CardContent>
             </Card>
