@@ -15,24 +15,26 @@ import {
   Car,
   Heart,
   Briefcase,
-  Palette
+  Palette,
+  TrendingUp,
+  CheckCircle
 } from 'lucide-react';
 
 const Dashboard = () => {
   const quickActions = [
-    { icon: Search, label: 'Find Services', color: 'text-blue-600' },
-    { icon: Calendar, label: 'My Bookings', color: 'text-green-600' },
-    { icon: MessageCircle, label: 'Messages', color: 'text-purple-600' },
-    { icon: User, label: 'Profile', color: 'text-orange-600' }
+    { icon: Search, label: 'Find Services', color: 'text-blue-600', bg: 'bg-blue-50', hoverBg: 'hover:bg-blue-100' },
+    { icon: Calendar, label: 'My Bookings', color: 'text-emerald-600', bg: 'bg-emerald-50', hoverBg: 'hover:bg-emerald-100' },
+    { icon: MessageCircle, label: 'Messages', color: 'text-purple-600', bg: 'bg-purple-50', hoverBg: 'hover:bg-purple-100' },
+    { icon: User, label: 'Profile', color: 'text-orange-600', bg: 'bg-orange-50', hoverBg: 'hover:bg-orange-100' }
   ];
 
   const serviceCategories = [
-    { icon: Home, label: 'Home Services', count: '120+ services' },
-    { icon: Wrench, label: 'Repair & Maintenance', count: '85+ services' },
-    { icon: Car, label: 'Automotive', count: '45+ services' },
-    { icon: Heart, label: 'Health & Wellness', count: '95+ services' },
-    { icon: Briefcase, label: 'Business Services', count: '60+ services' },
-    { icon: Palette, label: 'Creative Services', count: '75+ services' }
+    { icon: Home, label: 'Home Services', count: '120+ services', color: 'text-blue-600', bg: 'bg-blue-100' },
+    { icon: Wrench, label: 'Repair & Maintenance', count: '85+ services', color: 'text-green-600', bg: 'bg-green-100' },
+    { icon: Car, label: 'Automotive', count: '45+ services', color: 'text-red-600', bg: 'bg-red-100' },
+    { icon: Heart, label: 'Health & Wellness', count: '95+ services', color: 'text-pink-600', bg: 'bg-pink-100' },
+    { icon: Briefcase, label: 'Business Services', count: '60+ services', color: 'text-indigo-600', bg: 'bg-indigo-100' },
+    { icon: Palette, label: 'Creative Services', count: '75+ services', color: 'text-purple-600', bg: 'bg-purple-100' }
   ];
 
   const upcomingAppointments = [
@@ -57,34 +59,36 @@ const Dashboard = () => {
   ];
 
   const recentActivity = [
-    'House cleaning service completed - Rated 5 stars',
-    'New message from Mike Wilson (Plumber)',
-    'Booking confirmed for Car Wash service',
-    'Profile updated successfully'
+    { text: 'House cleaning service completed - Rated 5 stars', icon: CheckCircle, color: 'text-green-600' },
+    { text: 'New message from Mike Wilson (Plumber)', icon: MessageCircle, color: 'text-blue-600' },
+    { text: 'Booking confirmed for Car Wash service', icon: Calendar, color: 'text-emerald-600' },
+    { text: 'Profile updated successfully', icon: User, color: 'text-orange-600' }
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
       {/* Header */}
-      <div className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+      <div className="bg-white/80 backdrop-blur-sm shadow-sm border-b border-slate-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex justify-between items-center">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">Welcome back, John!</h1>
-              <p className="text-gray-600">Here's what's happening with your services</p>
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-slate-900 via-blue-900 to-indigo-900 bg-clip-text text-transparent">
+                Welcome back, John!
+              </h1>
+              <p className="text-slate-600 mt-1">Here's what's happening with your services</p>
             </div>
-            <div className="flex space-x-4">
-              <div className="text-center">
+            <div className="flex space-x-6">
+              <div className="text-center p-4 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl">
                 <div className="text-2xl font-bold text-blue-600">12</div>
-                <div className="text-sm text-gray-500">Total Bookings</div>
+                <div className="text-sm text-slate-600">Total Bookings</div>
               </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-green-600">3</div>
-                <div className="text-sm text-gray-500">This Month</div>
+              <div className="text-center p-4 bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-xl">
+                <div className="text-2xl font-bold text-emerald-600">3</div>
+                <div className="text-sm text-slate-600">This Month</div>
               </div>
-              <div className="text-center">
+              <div className="text-center p-4 bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl">
                 <div className="text-2xl font-bold text-purple-600">4.8</div>
-                <div className="text-sm text-gray-500">Avg Rating</div>
+                <div className="text-sm text-slate-600">Avg Rating</div>
               </div>
             </div>
           </div>
@@ -94,11 +98,14 @@ const Dashboard = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Left Column */}
-          <div className="lg:col-span-2 space-y-6">
+          <div className="lg:col-span-2 space-y-8">
             {/* Quick Actions */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Quick Actions</CardTitle>
+            <Card className="border-0 shadow-lg bg-white/70 backdrop-blur-sm">
+              <CardHeader className="pb-4">
+                <CardTitle className="text-xl text-slate-800 flex items-center gap-2">
+                  <TrendingUp className="h-5 w-5 text-blue-600" />
+                  Quick Actions
+                </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -106,10 +113,10 @@ const Dashboard = () => {
                     <Button
                       key={index}
                       variant="outline"
-                      className="h-24 flex flex-col items-center justify-center space-y-2 hover:bg-gray-50"
+                      className={`h-24 flex flex-col items-center justify-center space-y-2 border-0 ${action.bg} ${action.hoverBg} transition-all duration-200 hover:scale-105 hover:shadow-md`}
                     >
                       <action.icon className={`h-6 w-6 ${action.color}`} />
-                      <span className="text-sm font-medium">{action.label}</span>
+                      <span className="text-sm font-medium text-slate-700">{action.label}</span>
                     </Button>
                   ))}
                 </div>
@@ -117,24 +124,24 @@ const Dashboard = () => {
             </Card>
 
             {/* Service Categories */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Browse Services</CardTitle>
+            <Card className="border-0 shadow-lg bg-white/70 backdrop-blur-sm">
+              <CardHeader className="pb-4">
+                <CardTitle className="text-xl text-slate-800">Browse Services</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {serviceCategories.map((category, index) => (
                     <div
                       key={index}
-                      className="p-4 border rounded-lg hover:shadow-md transition-shadow cursor-pointer"
+                      className="p-4 border-0 rounded-xl bg-white/80 hover:bg-white hover:shadow-lg transition-all duration-200 cursor-pointer hover:scale-105"
                     >
                       <div className="flex items-center space-x-3">
-                        <div className="p-2 bg-blue-100 rounded-lg">
-                          <category.icon className="h-6 w-6 text-blue-600" />
+                        <div className={`p-3 ${category.bg} rounded-xl`}>
+                          <category.icon className={`h-6 w-6 ${category.color}`} />
                         </div>
                         <div>
-                          <h3 className="font-semibold text-gray-900">{category.label}</h3>
-                          <p className="text-sm text-gray-500">{category.count}</p>
+                          <h3 className="font-semibold text-slate-800">{category.label}</h3>
+                          <p className="text-sm text-slate-500">{category.count}</p>
                         </div>
                       </div>
                     </div>
@@ -144,16 +151,18 @@ const Dashboard = () => {
             </Card>
 
             {/* Recent Activity */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Recent Activity</CardTitle>
+            <Card className="border-0 shadow-lg bg-white/70 backdrop-blur-sm">
+              <CardHeader className="pb-4">
+                <CardTitle className="text-xl text-slate-800">Recent Activity</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
                   {recentActivity.map((activity, index) => (
-                    <div key={index} className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
-                      <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                      <span className="text-gray-700">{activity}</span>
+                    <div key={index} className="flex items-center space-x-4 p-4 bg-white/80 rounded-xl hover:bg-white transition-colors duration-200">
+                      <div className="flex-shrink-0">
+                        <activity.icon className={`h-5 w-5 ${activity.color}`} />
+                      </div>
+                      <span className="text-slate-700 flex-1">{activity.text}</span>
                     </div>
                   ))}
                 </div>
@@ -162,12 +171,12 @@ const Dashboard = () => {
           </div>
 
           {/* Right Column */}
-          <div className="space-y-6">
+          <div className="space-y-8">
             {/* Upcoming Appointments */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <Clock className="h-5 w-5" />
+            <Card className="border-0 shadow-lg bg-white/70 backdrop-blur-sm">
+              <CardHeader className="pb-4">
+                <CardTitle className="flex items-center space-x-2 text-xl text-slate-800">
+                  <Clock className="h-5 w-5 text-blue-600" />
                   <span>Upcoming Appointments</span>
                 </CardTitle>
               </CardHeader>
@@ -175,64 +184,64 @@ const Dashboard = () => {
                 <div className="space-y-4">
                   {upcomingAppointments.map((appointment, index) => (
                     <div key={index}>
-                      <div className="flex justify-between items-start">
-                        <div>
-                          <h4 className="font-semibold text-gray-900">{appointment.service}</h4>
-                          <p className="text-sm text-gray-600">{appointment.provider}</p>
-                          <p className="text-sm text-gray-500">{appointment.date}</p>
+                      <div className="flex justify-between items-start p-4 bg-white/80 rounded-xl">
+                        <div className="flex-1">
+                          <h4 className="font-semibold text-slate-800">{appointment.service}</h4>
+                          <p className="text-sm text-slate-600 mt-1">{appointment.provider}</p>
+                          <p className="text-sm text-slate-500 mt-1">{appointment.date}</p>
                         </div>
-                        <span className={`px-2 py-1 text-xs rounded-full ${
+                        <span className={`px-3 py-1 text-xs font-medium rounded-full ${
                           appointment.status === 'confirmed' 
-                            ? 'bg-green-100 text-green-800' 
-                            : 'bg-yellow-100 text-yellow-800'
+                            ? 'bg-emerald-100 text-emerald-700' 
+                            : 'bg-yellow-100 text-yellow-700'
                         }`}>
                           {appointment.status}
                         </span>
                       </div>
-                      {index < upcomingAppointments.length - 1 && <Separator className="mt-4" />}
+                      {index < upcomingAppointments.length - 1 && <Separator className="mt-4 bg-slate-200" />}
                     </div>
                   ))}
                 </div>
-                <Button className="w-full mt-4" variant="outline">
+                <Button className="w-full mt-6 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white border-0 shadow-md hover:shadow-lg transition-all duration-200">
                   View All Appointments
                 </Button>
               </CardContent>
             </Card>
 
             {/* Recommendations */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <Star className="h-5 w-5" />
+            <Card className="border-0 shadow-lg bg-white/70 backdrop-blur-sm">
+              <CardHeader className="pb-4">
+                <CardTitle className="flex items-center space-x-2 text-xl text-slate-800">
+                  <Star className="h-5 w-5 text-yellow-500" />
                   <span>Recommended for You</span>
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  <div className="p-3 border rounded-lg">
-                    <h4 className="font-semibold text-gray-900">Deep House Cleaning</h4>
-                    <p className="text-sm text-gray-600">Professional deep cleaning service</p>
-                    <div className="flex items-center justify-between mt-2">
-                      <span className="text-sm font-medium text-green-600">$120-180</span>
+                  <div className="p-4 border-0 rounded-xl bg-white/80 hover:bg-white hover:shadow-md transition-all duration-200">
+                    <h4 className="font-semibold text-slate-800">Deep House Cleaning</h4>
+                    <p className="text-sm text-slate-600 mt-1">Professional deep cleaning service</p>
+                    <div className="flex items-center justify-between mt-3">
+                      <span className="text-sm font-medium text-emerald-600 bg-emerald-50 px-2 py-1 rounded-lg">$120-180</span>
                       <div className="flex items-center space-x-1">
                         <Star className="h-4 w-4 text-yellow-400 fill-current" />
-                        <span className="text-sm">4.9</span>
+                        <span className="text-sm font-medium text-slate-600">4.9</span>
                       </div>
                     </div>
                   </div>
-                  <div className="p-3 border rounded-lg">
-                    <h4 className="font-semibold text-gray-900">Lawn Maintenance</h4>
-                    <p className="text-sm text-gray-600">Regular lawn care and maintenance</p>
-                    <div className="flex items-center justify-between mt-2">
-                      <span className="text-sm font-medium text-green-600">$80-120</span>
+                  <div className="p-4 border-0 rounded-xl bg-white/80 hover:bg-white hover:shadow-md transition-all duration-200">
+                    <h4 className="font-semibold text-slate-800">Lawn Maintenance</h4>
+                    <p className="text-sm text-slate-600 mt-1">Regular lawn care and maintenance</p>
+                    <div className="flex items-center justify-between mt-3">
+                      <span className="text-sm font-medium text-emerald-600 bg-emerald-50 px-2 py-1 rounded-lg">$80-120</span>
                       <div className="flex items-center space-x-1">
                         <Star className="h-4 w-4 text-yellow-400 fill-current" />
-                        <span className="text-sm">4.7</span>
+                        <span className="text-sm font-medium text-slate-600">4.7</span>
                       </div>
                     </div>
                   </div>
                 </div>
-                <Button className="w-full mt-4" variant="outline">
+                <Button className="w-full mt-6 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white border-0 shadow-md hover:shadow-lg transition-all duration-200">
                   Explore More Services
                 </Button>
               </CardContent>
