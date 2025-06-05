@@ -1,8 +1,8 @@
-
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
+import { CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 import { useNavigate } from 'react-router-dom';
 import { 
   Calendar, 
@@ -23,6 +23,26 @@ import {
 
 const Dashboard = () => {
   const navigate = useNavigate();
+  const [open, setOpen] = useState(false);
+
+  // Sample data for search suggestions
+  const searchData = [
+    // Categories
+    { type: 'category', value: 'house-interior', label: 'House Interior', icon: Home },
+    { type: 'category', value: 'gifts-customisation', label: 'Gifts Customisation', icon: Gift },
+    { type: 'category', value: 'automotive', label: 'Automotive', icon: Car },
+    { type: 'category', value: 'house-construction', label: 'House Construction', icon: Building },
+    { type: 'category', value: 'business-services', label: 'Business Services', icon: Briefcase },
+    { type: 'category', value: 'women-wear-customisation', label: 'Women Wear Customisation', icon: Shirt },
+    
+    // Service Providers
+    { type: 'provider', value: 'sarah-johnson', label: 'Sarah Johnson - Elite Interior Design', category: 'house-interior' },
+    { type: 'provider', value: 'rajesh-kumar', label: 'Rajesh Kumar - AutoCraft Modifications', category: 'automotive' },
+    { type: 'provider', value: 'priya-sharma', label: 'Priya Sharma - Personalized Gifts Co.', category: 'gifts-customisation' },
+    { type: 'provider', value: 'meera-patel', label: 'Meera Patel - Fashion Forward', category: 'women-wear-customisation' },
+    { type: 'provider', value: 'vikram-singh', label: 'Vikram Singh - BuildCraft Construction', category: 'house-construction' },
+    { type: 'provider', value: 'anita-reddy', label: 'Anita Reddy - TechSolutions Pro', category: 'business-services' },
+  ];
 
   const quickActions = [
     { 
@@ -31,7 +51,7 @@ const Dashboard = () => {
       color: 'text-blue-600', 
       bg: 'bg-blue-50', 
       hoverBg: 'hover:bg-blue-100',
-      action: () => navigate('/services')
+      action: () => setOpen(true)
     },
     { 
       icon: Calendar, 
@@ -170,6 +190,15 @@ const Dashboard = () => {
 
   const handleQuickAction = (action: () => void) => {
     action();
+  };
+
+  const handleSearchSelect = (item: any) => {
+    setOpen(false);
+    if (item.type === 'category') {
+      navigate(`/services?category=${item.value}`);
+    } else if (item.type === 'provider') {
+      navigate(`/services?category=${item.category}&provider=${item.value}`);
+    }
   };
 
   return (
@@ -347,6 +376,30 @@ const Dashboard = () => {
           </div>
         </div>
       </div>
+
+      {/* Search Command Dialog */}
+      <CommandDialog open={open} onOpenChange={setOpen}>
+        <CommandInput placeholder="Search for services or providers..." />
+        <CommandList>
+          <CommandEmpty>No results found.</CommandEmpty>
+          <CommandGroup heading="Categories">
+            {searchData.filter(item => item.type === 'category').map((item) => (
+              <CommandItem key={item.value} onSelect={() => handleSearchSelect(item)}>
+                <item.icon className="mr-2 h-4 w-4" />
+                <span>{item.label}</span>
+              </CommandItem>
+            ))}
+          </CommandGroup>
+          <CommandGroup heading="Service Providers">
+            {searchData.filter(item => item.type === 'provider').map((item) => (
+              <CommandItem key={item.value} onSelect={() => handleSearchSelect(item)}>
+                <User className="mr-2 h-4 w-4" />
+                <span>{item.label}</span>
+              </CommandItem>
+            ))}
+          </CommandGroup>
+        </CommandList>
+      </CommandDialog>
     </div>
   );
 };

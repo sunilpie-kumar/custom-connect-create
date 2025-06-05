@@ -8,7 +8,7 @@ import AuthModal from '@/components/AuthModal';
 import ChatModal from '@/components/ChatModal';
 import BookingModal from '@/components/BookingModal';
 import { ArrowLeft, Search, Filter, User, LogOut } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 
 interface ServiceProvider {
@@ -30,7 +30,7 @@ const mockProviders: ServiceProvider[] = [
     id: '1',
     name: 'Sarah Johnson',
     businessName: 'Elite Interior Design',
-    category: 'House Decor',
+    category: 'house-interior',
     rating: 4.9,
     reviewCount: 127,
     location: 'Mumbai, Maharashtra',
@@ -43,7 +43,7 @@ const mockProviders: ServiceProvider[] = [
     id: '2',
     name: 'Rajesh Kumar',
     businessName: 'AutoCraft Modifications',
-    category: 'Automobile',
+    category: 'automotive',
     rating: 4.8,
     reviewCount: 89,
     location: 'Delhi, NCR',
@@ -56,7 +56,7 @@ const mockProviders: ServiceProvider[] = [
     id: '3',
     name: 'Priya Sharma',
     businessName: 'Personalized Gifts Co.',
-    category: 'Gifts',
+    category: 'gifts-customisation',
     rating: 4.7,
     reviewCount: 156,
     location: 'Bangalore, Karnataka',
@@ -69,7 +69,7 @@ const mockProviders: ServiceProvider[] = [
     id: '4',
     name: 'Meera Patel',
     businessName: 'Fashion Forward',
-    category: 'Women Wear',
+    category: 'women-wear-customisation',
     rating: 4.9,
     reviewCount: 203,
     location: 'Ahmedabad, Gujarat',
@@ -82,7 +82,7 @@ const mockProviders: ServiceProvider[] = [
     id: '5',
     name: 'Vikram Singh',
     businessName: 'BuildCraft Construction',
-    category: 'Construction',
+    category: 'house-construction',
     rating: 4.6,
     reviewCount: 78,
     location: 'Pune, Maharashtra',
@@ -95,7 +95,7 @@ const mockProviders: ServiceProvider[] = [
     id: '6',
     name: 'Anita Reddy',
     businessName: 'TechSolutions Pro',
-    category: 'Technology',
+    category: 'business-services',
     rating: 4.8,
     reviewCount: 134,
     location: 'Hyderabad, Telangana',
@@ -108,7 +108,7 @@ const mockProviders: ServiceProvider[] = [
     id: '7',
     name: 'Rohit Gupta',
     businessName: 'Modern Spaces',
-    category: 'House Decor',
+    category: 'house-interior',
     rating: 4.7,
     reviewCount: 91,
     location: 'Chennai, Tamil Nadu',
@@ -121,7 +121,7 @@ const mockProviders: ServiceProvider[] = [
     id: '8',
     name: 'Kavya Nair',
     businessName: 'Artisan Gifts',
-    category: 'Gifts',
+    category: 'gifts-customisation',
     rating: 4.9,
     reviewCount: 167,
     location: 'Kochi, Kerala',
@@ -132,11 +132,21 @@ const mockProviders: ServiceProvider[] = [
   }
 ];
 
-const categories = ['All', 'House Decor', 'Automobile', 'Gifts', 'Women Wear', 'Construction', 'Technology'];
+const categoryMap: { [key: string]: string } = {
+  'house-interior': 'House Interior',
+  'gifts-customisation': 'Gifts Customisation',
+  'automotive': 'Automotive',
+  'women-wear-customisation': 'Women Wear Customisation',
+  'house-construction': 'House Construction',
+  'business-services': 'Business Services'
+};
+
+const categories = ['All', 'House Interior', 'Automotive', 'Gifts Customisation', 'Women Wear Customisation', 'House Construction', 'Business Services'];
 
 const Services = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [searchParams] = useSearchParams();
   
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
@@ -161,7 +171,15 @@ const Services = () => {
       setIsAuthenticated(true);
       setUser(JSON.parse(userData));
     }
-  }, []);
+
+    // Handle category filter from URL parameters
+    const categoryParam = searchParams.get('category');
+    if (categoryParam && categoryMap[categoryParam]) {
+      const categoryName = categoryMap[categoryParam];
+      setSelectedCategory(categoryName);
+      filterProviders('', categoryName);
+    }
+  }, [searchParams]);
 
   const handleSearch = (term: string) => {
     setSearchTerm(term);
@@ -177,13 +195,17 @@ const Services = () => {
     let filtered = providers;
     
     if (category !== 'All') {
-      filtered = filtered.filter(provider => provider.category === category);
+      // Convert display name back to category key for filtering
+      const categoryKey = Object.entries(categoryMap).find(([key, value]) => value === category)?.[0];
+      if (categoryKey) {
+        filtered = filtered.filter(provider => provider.category === categoryKey);
+      }
     }
     
     if (term) {
       filtered = filtered.filter(provider => 
         provider.businessName.toLowerCase().includes(term.toLowerCase()) ||
-        provider.category.toLowerCase().includes(term.toLowerCase()) ||
+        categoryMap[provider.category]?.toLowerCase().includes(term.toLowerCase()) ||
         provider.name.toLowerCase().includes(term.toLowerCase())
       );
     }
@@ -232,6 +254,10 @@ const Services = () => {
     });
   };
 
+  const handleBack = () => {
+    navigate(-1);
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -241,11 +267,11 @@ const Services = () => {
             <Button 
               variant="ghost" 
               size="sm"
-              onClick={() => navigate('/')}
+              onClick={handleBack}
               className="flex items-center gap-2"
             >
               <ArrowLeft className="w-4 h-4" />
-              Back to Home
+              Back
             </Button>
 
             {isAuthenticated ? (
