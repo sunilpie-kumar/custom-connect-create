@@ -161,6 +161,7 @@ const Services = () => {
   const [showChatModal, setShowChatModal] = useState(false);
   const [showBookingModal, setShowBookingModal] = useState(false);
   const [selectedProvider, setSelectedProvider] = useState<ServiceProvider | null>(null);
+  const [pendingAction, setPendingAction] = useState<'chat' | 'call' | null>(null);
 
   useEffect(() => {
     // Check if user is authenticated from localStorage
@@ -215,6 +216,8 @@ const Services = () => {
 
   const handleChatClick = (provider: ServiceProvider) => {
     if (!isAuthenticated) {
+      setSelectedProvider(provider);
+      setPendingAction('chat');
       setShowAuthModal(true);
       return;
     }
@@ -224,6 +227,8 @@ const Services = () => {
 
   const handleCallClick = (provider: ServiceProvider) => {
     if (!isAuthenticated) {
+      setSelectedProvider(provider);
+      setPendingAction('call');
       setShowAuthModal(true);
       return;
     }
@@ -248,6 +253,17 @@ const Services = () => {
     if (userData) {
       setUser(JSON.parse(userData));
     }
+    
+    // Handle pending action after authentication
+    if (pendingAction && selectedProvider) {
+      if (pendingAction === 'chat') {
+        setShowChatModal(true);
+      } else if (pendingAction === 'call') {
+        setShowBookingModal(true);
+      }
+      setPendingAction(null);
+    }
+    
     toast({
       title: "Welcome!",
       description: "You're now signed in and can access all features.",
@@ -360,7 +376,11 @@ const Services = () => {
       {/* Modals */}
       <AuthModal 
         isOpen={showAuthModal}
-        onClose={() => setShowAuthModal(false)}
+        onClose={() => {
+          setShowAuthModal(false);
+          setPendingAction(null);
+          setSelectedProvider(null);
+        }}
         onAuthenticated={handleAuthenticated}
       />
       
