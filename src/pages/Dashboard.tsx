@@ -21,10 +21,14 @@ import {
   Shield,
   ArrowRight
 } from 'lucide-react';
+import BookingsPage from '@/components/BookingsPage';
+import MessagesPage from '@/components/MessagesPage';
+import ProfilePage from '@/components/ProfilePage';
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
+  const [currentView, setCurrentView] = useState<'dashboard' | 'bookings' | 'messages' | 'profile'>('dashboard');
 
   // Sample data for search suggestions
   const searchData = [
@@ -60,7 +64,7 @@ const Dashboard = () => {
       color: 'text-emerald-600', 
       bg: 'bg-emerald-50', 
       hoverBg: 'hover:bg-emerald-100',
-      action: () => console.log('Navigate to bookings')
+      action: () => setCurrentView('bookings')
     },
     { 
       icon: MessageCircle, 
@@ -68,7 +72,7 @@ const Dashboard = () => {
       color: 'text-purple-600', 
       bg: 'bg-purple-50', 
       hoverBg: 'hover:bg-purple-100',
-      action: () => console.log('Open messages')
+      action: () => setCurrentView('messages')
     },
     { 
       icon: User, 
@@ -76,7 +80,7 @@ const Dashboard = () => {
       color: 'text-orange-600', 
       bg: 'bg-orange-50', 
       hoverBg: 'hover:bg-orange-100',
-      action: () => console.log('Navigate to profile')
+      action: () => setCurrentView('profile')
     }
   ];
 
@@ -213,6 +217,23 @@ const Dashboard = () => {
       navigate(`/services?category=${item.category}&provider=${item.value}`);
     }
   };
+
+  const handleBackToDashboard = () => {
+    setCurrentView('dashboard');
+  };
+
+  // Show different views based on currentView state
+  if (currentView === 'bookings') {
+    return <BookingsPage onBack={handleBackToDashboard} />;
+  }
+
+  if (currentView === 'messages') {
+    return <MessagesPage onBack={handleBackToDashboard} />;
+  }
+
+  if (currentView === 'profile') {
+    return <ProfilePage onBack={handleBackToDashboard} />;
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
