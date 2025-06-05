@@ -18,7 +18,8 @@ import {
   Shirt,
   TrendingUp,
   UserPlus,
-  Shield
+  Shield,
+  ArrowRight
 } from 'lucide-react';
 
 const Dashboard = () => {
@@ -86,7 +87,9 @@ const Dashboard = () => {
       count: '120+ providers', 
       color: 'text-blue-600', 
       bg: 'bg-blue-100',
-      category: 'house-interior'
+      category: 'house-interior',
+      image: 'https://images.unsplash.com/photo-1721322800607-8c38375eef04?auto=format&fit=crop&w=600&q=80',
+      description: 'Transform your space with expert interior designers'
     },
     { 
       icon: Gift, 
@@ -94,7 +97,9 @@ const Dashboard = () => {
       count: '85+ providers', 
       color: 'text-green-600', 
       bg: 'bg-green-100',
-      category: 'gifts-customisation'
+      category: 'gifts-customisation',
+      image: 'https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?auto=format&fit=crop&w=600&q=80',
+      description: 'Create unique personalized gifts for every occasion'
     },
     { 
       icon: Car, 
@@ -102,7 +107,9 @@ const Dashboard = () => {
       count: '45+ providers', 
       color: 'text-red-600', 
       bg: 'bg-red-100',
-      category: 'automotive'
+      category: 'automotive',
+      image: 'https://images.unsplash.com/photo-1489824904134-891ab64532f1?auto=format&fit=crop&w=600&q=80',
+      description: 'Custom car modifications and detailing services'
     },
     { 
       icon: Building, 
@@ -110,7 +117,9 @@ const Dashboard = () => {
       count: '95+ providers', 
       color: 'text-pink-600', 
       bg: 'bg-pink-100',
-      category: 'house-construction'
+      category: 'house-construction',
+      image: 'https://images.unsplash.com/photo-1541889677669-e08b4cac3105?auto=format&fit=crop&w=600&q=80',
+      description: 'Build your dream home with trusted contractors'
     },
     { 
       icon: Briefcase, 
@@ -118,7 +127,9 @@ const Dashboard = () => {
       count: '60+ providers', 
       color: 'text-indigo-600', 
       bg: 'bg-indigo-100',
-      category: 'business-services'
+      category: 'business-services',
+      image: 'https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?auto=format&fit=crop&w=600&q=80',
+      description: 'Professional services to grow your business'
     },
     { 
       icon: Shirt, 
@@ -126,7 +137,9 @@ const Dashboard = () => {
       count: '75+ providers', 
       color: 'text-purple-600', 
       bg: 'bg-purple-100',
-      category: 'women-wear-customisation'
+      category: 'women-wear-customisation',
+      image: 'https://images.unsplash.com/photo-1434389677669-e08b4cac3105?auto=format&fit=crop&w=600&q=80',
+      description: 'Custom fashion designs and tailoring services'
     }
   ];
 
@@ -260,26 +273,47 @@ const Dashboard = () => {
               </CardContent>
             </Card>
 
-            {/* Service Categories */}
+            {/* Service Categories - Updated to List Form with Image Cards */}
             <Card className="border-0 shadow-lg bg-white/70 backdrop-blur-sm">
               <CardHeader className="pb-4">
                 <CardTitle className="text-xl text-slate-800">Browse Service Categories</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div className="space-y-4">
                   {serviceCategories.map((category, index) => (
                     <div
                       key={index}
                       onClick={() => handleCategoryClick(category.category)}
-                      className="p-4 border-0 rounded-xl bg-white/80 hover:bg-white hover:shadow-lg transition-all duration-200 cursor-pointer hover:scale-105"
+                      className="group relative overflow-hidden rounded-xl bg-white shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer hover:scale-[1.02]"
                     >
-                      <div className="flex items-center space-x-3">
-                        <div className={`p-3 ${category.bg} rounded-xl`}>
-                          <category.icon className={`h-5 w-5 sm:h-6 sm:w-6 ${category.color}`} />
+                      <div className="flex items-center">
+                        {/* Image Section */}
+                        <div className="relative w-32 h-24 flex-shrink-0">
+                          <img 
+                            src={category.image} 
+                            alt={category.label}
+                            className="w-full h-full object-cover"
+                          />
+                          <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all duration-300"></div>
+                          <div className={`absolute top-3 left-3 p-2 ${category.bg} rounded-lg`}>
+                            <category.icon className={`h-4 w-4 ${category.color}`} />
+                          </div>
                         </div>
-                        <div className="flex-1 min-w-0">
-                          <h3 className="font-semibold text-slate-800 text-sm sm:text-base truncate">{category.label}</h3>
-                          <p className="text-xs sm:text-sm text-slate-500">{category.count}</p>
+                        
+                        {/* Content Section */}
+                        <div className="flex-1 p-4">
+                          <div className="flex items-center justify-between">
+                            <div className="flex-1">
+                              <h3 className="font-semibold text-slate-800 text-lg mb-1">{category.label}</h3>
+                              <p className="text-sm text-slate-600 mb-2">{category.description}</p>
+                              <span className="text-xs font-medium text-slate-500 bg-slate-100 px-2 py-1 rounded-full">
+                                {category.count}
+                              </span>
+                            </div>
+                            <div className="flex items-center text-slate-400 group-hover:text-slate-600 transition-colors duration-300">
+                              <ArrowRight className="h-5 w-5" />
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </div>
