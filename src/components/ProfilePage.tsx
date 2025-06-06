@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -83,6 +82,37 @@ const conversationsData = [
     timestamp: '1 day ago',
     unread: 0,
     avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=50&q=80'
+  }
+];
+
+const recentActivity = [
+  {
+    id: 1,
+    action: 'Completed consultation',
+    provider: 'Sarah Johnson',
+    service: 'Interior Design Consultation',
+    date: '2 days ago'
+  },
+  {
+    id: 2,
+    action: 'Left a review',
+    provider: 'Mike Wilson',
+    service: 'Custom Gift Creation',
+    date: '1 week ago'
+  },
+  {
+    id: 3,
+    action: 'Booked service',
+    provider: 'AutoCustom Pro',
+    service: 'Car Customization',
+    date: '2 weeks ago'
+  },
+  {
+    id: 4,
+    action: 'Added to favorites',
+    provider: 'Anita Reddy',
+    service: 'Business Strategy',
+    date: '3 weeks ago'
   }
 ];
 
