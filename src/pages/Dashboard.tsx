@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -21,14 +22,13 @@ import {
   Shield,
   ArrowRight
 } from 'lucide-react';
-import BookingsPage from '@/components/BookingsPage';
-import MessagesPage from '@/components/MessagesPage';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import ProfilePage from '@/components/ProfilePage';
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
-  const [currentView, setCurrentView] = useState<'dashboard' | 'bookings' | 'messages' | 'profile'>('dashboard');
+  const [currentView, setCurrentView] = useState<'dashboard' | 'profile'>('dashboard');
 
   // Sample data for search suggestions
   const searchData = [
@@ -47,41 +47,6 @@ const Dashboard = () => {
     { type: 'provider', value: 'meera-patel', label: 'Meera Patel - Fashion Forward', category: 'women-wear-customisation' },
     { type: 'provider', value: 'vikram-singh', label: 'Vikram Singh - BuildCraft Construction', category: 'house-construction' },
     { type: 'provider', value: 'anita-reddy', label: 'Anita Reddy - TechSolutions Pro', category: 'business-services' },
-  ];
-
-  const quickActions = [
-    { 
-      icon: Search, 
-      label: 'Find Services', 
-      color: 'text-blue-600', 
-      bg: 'bg-blue-50', 
-      hoverBg: 'hover:bg-blue-100',
-      action: () => setOpen(true)
-    },
-    { 
-      icon: Calendar, 
-      label: 'My Bookings', 
-      color: 'text-emerald-600', 
-      bg: 'bg-emerald-50', 
-      hoverBg: 'hover:bg-emerald-100',
-      action: () => setCurrentView('bookings')
-    },
-    { 
-      icon: MessageCircle, 
-      label: 'Messages', 
-      color: 'text-purple-600', 
-      bg: 'bg-purple-50', 
-      hoverBg: 'hover:bg-purple-100',
-      action: () => setCurrentView('messages')
-    },
-    { 
-      icon: User, 
-      label: 'Profile', 
-      color: 'text-orange-600', 
-      bg: 'bg-orange-50', 
-      hoverBg: 'hover:bg-orange-100',
-      action: () => setCurrentView('profile')
-    }
   ];
 
   const serviceCategories = [
@@ -205,10 +170,6 @@ const Dashboard = () => {
     navigate(`/services?category=${category}`);
   };
 
-  const handleQuickAction = (action: () => void) => {
-    action();
-  };
-
   const handleSearchSelect = (item: any) => {
     setOpen(false);
     if (item.type === 'category') {
@@ -222,15 +183,7 @@ const Dashboard = () => {
     setCurrentView('dashboard');
   };
 
-  // Show different views based on currentView state
-  if (currentView === 'bookings') {
-    return <BookingsPage onBack={handleBackToDashboard} />;
-  }
-
-  if (currentView === 'messages') {
-    return <MessagesPage onBack={handleBackToDashboard} />;
-  }
-
+  // Show profile page
   if (currentView === 'profile') {
     return <ProfilePage onBack={handleBackToDashboard} />;
   }
@@ -247,19 +200,27 @@ const Dashboard = () => {
               </h1>
               <p className="text-slate-600 mt-1">Discover trusted service providers in your area</p>
             </div>
-            <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 w-full lg:w-auto">
-              <div className="text-center p-4 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl flex-1 lg:flex-none">
-                <div className="text-2xl font-bold text-blue-600">12</div>
-                <div className="text-sm text-slate-600">Services Booked</div>
+            <div className="flex items-center gap-6">
+              <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
+                <div className="text-center p-4 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl flex-1 lg:flex-none">
+                  <div className="text-2xl font-bold text-blue-600">12</div>
+                  <div className="text-sm text-slate-600">Services Booked</div>
+                </div>
+                <div className="text-center p-4 bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-xl flex-1 lg:flex-none">
+                  <div className="text-2xl font-bold text-emerald-600">3</div>
+                  <div className="text-sm text-slate-600">Active Requests</div>
+                </div>
               </div>
-              <div className="text-center p-4 bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-xl flex-1 lg:flex-none">
-                <div className="text-2xl font-bold text-emerald-600">3</div>
-                <div className="text-sm text-slate-600">Active Requests</div>
-              </div>
-              <div className="text-center p-4 bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl flex-1 lg:flex-none">
-                <div className="text-2xl font-bold text-purple-600">4.8</div>
-                <div className="text-sm text-slate-600">Your Rating</div>
-              </div>
+              <Button
+                variant="ghost"
+                onClick={() => setCurrentView('profile')}
+                className="p-0 h-auto rounded-full"
+              >
+                <Avatar className="h-12 w-12">
+                  <AvatarImage src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=150&q=80" alt="John Doe" />
+                  <AvatarFallback>JD</AvatarFallback>
+                </Avatar>
+              </Button>
             </div>
           </div>
         </div>
@@ -269,28 +230,23 @@ const Dashboard = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Left Column */}
           <div className="lg:col-span-2 space-y-8">
-            {/* Quick Actions */}
+            {/* Search Services */}
             <Card className="border-0 shadow-lg bg-white/70 backdrop-blur-sm">
               <CardHeader className="pb-4">
                 <CardTitle className="text-xl text-slate-800 flex items-center gap-2">
-                  <TrendingUp className="h-5 w-5 text-blue-600" />
-                  Quick Actions
+                  <Search className="h-5 w-5 text-blue-600" />
+                  Search Services / Providers
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                  {quickActions.map((action, index) => (
-                    <Button
-                      key={index}
-                      variant="outline"
-                      onClick={() => handleQuickAction(action.action)}
-                      className={`h-20 sm:h-24 flex flex-col items-center justify-center space-y-2 border-0 ${action.bg} ${action.hoverBg} transition-all duration-200 hover:scale-105 hover:shadow-md`}
-                    >
-                      <action.icon className={`h-5 w-5 sm:h-6 sm:w-6 ${action.color}`} />
-                      <span className="text-xs sm:text-sm font-medium text-slate-700 text-center">{action.label}</span>
-                    </Button>
-                  ))}
-                </div>
+                <Button
+                  variant="outline"
+                  onClick={() => setOpen(true)}
+                  className="w-full justify-start text-slate-500 h-12 bg-slate-50 hover:bg-slate-100 border-slate-200"
+                >
+                  <Search className="h-4 w-4 mr-3" />
+                  Search for services or providers...
+                </Button>
               </CardContent>
             </Card>
 

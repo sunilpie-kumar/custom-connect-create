@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { 
   User, 
   Mail, 
@@ -18,8 +19,11 @@ import {
   Heart,
   MessageCircle,
   Clock,
-  Award
+  Award,
+  Video,
+  Send
 } from 'lucide-react';
+import { useState } from 'react';
 
 const userProfile = {
   name: 'John Doe',
@@ -34,58 +38,67 @@ const userProfile = {
   bio: 'I love discovering unique service providers and creating beautiful spaces. Always looking for the next creative project!'
 };
 
-const favoriteProviders = [
+const bookingsData = [
   {
     id: 1,
-    name: 'Sarah Johnson',
-    service: 'Interior Design',
-    rating: 4.9,
-    image: 'https://images.unsplash.com/photo-1494790108755-2616b6be4d1e?auto=format&fit=crop&w=100&q=80'
+    service: 'Interior Design Consultation',
+    provider: 'Sarah Johnson',
+    date: 'Dec 8, 2025',
+    time: '2:00 PM - 3:00 PM',
+    type: 'Video Call',
+    status: 'confirmed',
+    location: 'Online',
+    price: '$150',
+    image: 'https://images.unsplash.com/photo-1721322800607-8c38375eef04?auto=format&fit=crop&w=100&q=80'
   },
   {
     id: 2,
-    name: 'Mike Wilson',
-    service: 'Custom Gifts',
-    rating: 4.8,
-    image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=100&q=80'
-  },
-  {
-    id: 3,
-    name: 'AutoCustom Pro',
-    service: 'Car Modification',
-    rating: 4.7,
-    image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=100&q=80'
+    service: 'Custom Gift Consultation',
+    provider: 'Mike Wilson',
+    date: 'Dec 10, 2025',
+    time: '10:00 AM - 11:00 AM',
+    type: 'In Person',
+    status: 'pending',
+    location: 'Arts District Studio',
+    price: '$80',
+    image: 'https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?auto=format&fit=crop&w=100&q=80'
   }
 ];
 
-const recentActivity = [
+const conversationsData = [
   {
     id: 1,
-    action: 'Booked appointment',
     provider: 'Sarah Johnson',
-    service: 'Interior Design Consultation',
-    date: '2 days ago'
+    service: 'Interior Design',
+    lastMessage: 'I\'ve prepared some initial sketches for your living room. Would you like to schedule a call to discuss them?',
+    timestamp: '2 hours ago',
+    unread: 2,
+    avatar: 'https://images.unsplash.com/photo-1494790108755-2616b6be4d1e?auto=format&fit=crop&w=50&q=80'
   },
   {
     id: 2,
-    action: 'Left review',
     provider: 'Mike Wilson',
-    service: 'Custom Gift Creation',
-    date: '1 week ago'
-  },
-  {
-    id: 3,
-    action: 'Added to favorites',
-    provider: 'AutoCustom Pro',
-    service: 'Car Customization',
-    date: '2 weeks ago'
+    service: 'Custom Gifts',
+    lastMessage: 'Perfect! I\'ll start working on the personalized photo album. Expected completion is next week.',
+    timestamp: '1 day ago',
+    unread: 0,
+    avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=50&q=80'
   }
 ];
 
 const ProfilePage = ({ onBack }: { onBack: () => void }) => {
+  const [newMessage, setNewMessage] = useState('');
+
+  const handleSendMessage = () => {
+    if (newMessage.trim()) {
+      console.log('Sending message:', newMessage);
+      setNewMessage('');
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex items-center justify-between mb-8">
           <div>
             <h1 className="text-3xl font-bold text-slate-900">My Profile</h1>
@@ -96,16 +109,15 @@ const ProfilePage = ({ onBack }: { onBack: () => void }) => {
           </Button>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           {/* Profile Summary */}
           <Card className="border-0 shadow-lg bg-white/70 backdrop-blur-sm">
             <CardContent className="p-6 text-center">
               <div className="relative inline-block mb-4">
-                <img 
-                  src={userProfile.avatar} 
-                  alt={userProfile.name}
-                  className="w-24 h-24 rounded-full object-cover mx-auto"
-                />
+                <Avatar className="w-24 h-24 mx-auto">
+                  <AvatarImage src={userProfile.avatar} alt={userProfile.name} />
+                  <AvatarFallback>JD</AvatarFallback>
+                </Avatar>
                 <Button 
                   size="sm" 
                   className="absolute bottom-0 right-0 rounded-full w-8 h-8 p-0"
@@ -145,11 +157,12 @@ const ProfilePage = ({ onBack }: { onBack: () => void }) => {
           </Card>
 
           {/* Profile Details */}
-          <div className="lg:col-span-2">
+          <div className="lg:col-span-3">
             <Tabs defaultValue="personal" className="w-full">
-              <TabsList className="grid w-full grid-cols-3">
+              <TabsList className="grid w-full grid-cols-4">
                 <TabsTrigger value="personal">Personal Info</TabsTrigger>
-                <TabsTrigger value="favorites">Favorites</TabsTrigger>
+                <TabsTrigger value="bookings">My Bookings</TabsTrigger>
+                <TabsTrigger value="messages">Messages</TabsTrigger>
                 <TabsTrigger value="activity">Activity</TabsTrigger>
               </TabsList>
 
@@ -189,45 +202,125 @@ const ProfilePage = ({ onBack }: { onBack: () => void }) => {
                 </Card>
               </TabsContent>
 
-              <TabsContent value="favorites" className="space-y-6">
+              <TabsContent value="bookings" className="space-y-6">
                 <Card className="border-0 shadow-lg bg-white/70 backdrop-blur-sm">
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
-                      <Heart className="h-5 w-5" />
-                      Favorite Providers
+                      <Calendar className="h-5 w-5" />
+                      My Bookings
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
-                      {favoriteProviders.map((provider) => (
-                        <div key={provider.id} className="flex items-center justify-between p-4 bg-white/80 rounded-lg">
-                          <div className="flex items-center space-x-4">
-                            <img 
-                              src={provider.image} 
-                              alt={provider.name}
-                              className="w-12 h-12 rounded-full object-cover"
-                            />
-                            <div>
-                              <h3 className="font-semibold text-slate-900">{provider.name}</h3>
-                              <p className="text-sm text-slate-600">{provider.service}</p>
-                              <div className="flex items-center space-x-1 mt-1">
-                                <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                                <span className="text-sm text-slate-600">{provider.rating}</span>
+                      {bookingsData.map((booking) => (
+                        <div key={booking.id} className="flex items-center space-x-4 p-4 bg-white/80 rounded-lg">
+                          <img 
+                            src={booking.image} 
+                            alt={booking.service}
+                            className="w-16 h-16 rounded-lg object-cover"
+                          />
+                          <div className="flex-1">
+                            <div className="flex items-center justify-between mb-2">
+                              <h3 className="text-lg font-semibold text-slate-900">{booking.service}</h3>
+                              <Badge variant={booking.status === 'confirmed' ? 'default' : 'secondary'}>
+                                {booking.status}
+                              </Badge>
+                            </div>
+                            <div className="flex items-center space-x-4 text-sm text-slate-600 mb-3">
+                              <div className="flex items-center space-x-1">
+                                <User className="h-4 w-4" />
+                                <span>{booking.provider}</span>
+                              </div>
+                              <div className="flex items-center space-x-1">
+                                <Calendar className="h-4 w-4" />
+                                <span>{booking.date}</span>
+                              </div>
+                              <div className="flex items-center space-x-1">
+                                <Clock className="h-4 w-4" />
+                                <span>{booking.time}</span>
+                              </div>
+                            </div>
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center space-x-4 text-sm text-slate-600">
+                                <div className="flex items-center space-x-1">
+                                  {booking.type === 'Video Call' ? (
+                                    <Video className="h-4 w-4" />
+                                  ) : (
+                                    <MapPin className="h-4 w-4" />
+                                  )}
+                                  <span>{booking.location}</span>
+                                </div>
+                                <span className="font-semibold text-slate-900">{booking.price}</span>
+                              </div>
+                              <div className="flex space-x-2">
+                                <Button size="sm" variant="outline">
+                                  <MessageCircle className="h-4 w-4 mr-1" />
+                                  Message
+                                </Button>
+                                <Button size="sm">
+                                  {booking.type === 'Video Call' ? 'Join Call' : 'Call Provider'}
+                                </Button>
                               </div>
                             </div>
                           </div>
-                          <div className="flex space-x-2">
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+
+              <TabsContent value="messages" className="space-y-6">
+                <Card className="border-0 shadow-lg bg-white/70 backdrop-blur-sm">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <MessageCircle className="h-5 w-5" />
+                      Recent Messages
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      {conversationsData.map((conversation) => (
+                        <div key={conversation.id} className="p-4 bg-white/80 rounded-lg">
+                          <div className="flex items-center space-x-3 mb-3">
+                            <img 
+                              src={conversation.avatar} 
+                              alt={conversation.provider}
+                              className="w-10 h-10 rounded-full object-cover"
+                            />
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center justify-between">
+                                <h3 className="font-semibold text-slate-900 truncate">{conversation.provider}</h3>
+                                {conversation.unread > 0 && (
+                                  <Badge className="bg-blue-600">{conversation.unread}</Badge>
+                                )}
+                              </div>
+                              <p className="text-sm text-slate-600 truncate">{conversation.service}</p>
+                            </div>
+                          </div>
+                          <p className="text-sm text-slate-700 mb-2">{conversation.lastMessage}</p>
+                          <div className="flex items-center justify-between">
+                            <p className="text-xs text-slate-500">{conversation.timestamp}</p>
                             <Button size="sm" variant="outline">
-                              <MessageCircle className="h-4 w-4 mr-1" />
-                              Message
-                            </Button>
-                            <Button size="sm">
-                              <Calendar className="h-4 w-4 mr-1" />
-                              Book
+                              Reply
                             </Button>
                           </div>
                         </div>
                       ))}
+                    </div>
+                    <div className="mt-6 p-4 bg-white/80 rounded-lg">
+                      <div className="flex items-center space-x-2">
+                        <Input
+                          value={newMessage}
+                          onChange={(e) => setNewMessage(e.target.value)}
+                          placeholder="Type your message..."
+                          className="flex-1"
+                          onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
+                        />
+                        <Button onClick={handleSendMessage} size="sm">
+                          <Send className="h-4 w-4" />
+                        </Button>
+                      </div>
                     </div>
                   </CardContent>
                 </Card>
