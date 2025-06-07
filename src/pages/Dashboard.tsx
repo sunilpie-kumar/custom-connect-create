@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -20,7 +19,9 @@ import {
   TrendingUp,
   UserPlus,
   Shield,
-  ArrowRight
+  ArrowRight,
+  Palette,
+  Users
 } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import ProfilePage from '@/components/ProfilePage';
@@ -39,6 +40,8 @@ const Dashboard = () => {
     { type: 'category', value: 'house-construction', label: 'House Construction', icon: Building },
     { type: 'category', value: 'business-services', label: 'Business Services', icon: Briefcase },
     { type: 'category', value: 'women-wear-customisation', label: 'Women Wear Customisation', icon: Shirt },
+    { type: 'category', value: 'tattoo', label: 'Tattoo', icon: Palette },
+    { type: 'category', value: 'mens-wear-customisation', label: 'Mens Wear Customisation', icon: Users },
     
     // Service Providers
     { type: 'provider', value: 'sarah-johnson', label: 'Sarah Johnson - Elite Interior Design', category: 'house-interior' },
@@ -109,6 +112,26 @@ const Dashboard = () => {
       category: 'women-wear-customisation',
       image: 'https://images.unsplash.com/photo-1434389677669-e08b4cac3105?auto=format&fit=crop&w=600&q=80',
       description: 'Custom fashion designs and tailoring services'
+    },
+    { 
+      icon: Palette, 
+      label: 'Tattoo', 
+      count: '30+ providers', 
+      color: 'text-orange-600', 
+      bg: 'bg-orange-100',
+      category: 'tattoo',
+      image: 'https://images.unsplash.com/photo-1611501275019-9b5cda994ac4?auto=format&fit=crop&w=600&q=80',
+      description: 'Professional tattoo artists and custom designs'
+    },
+    { 
+      icon: Users, 
+      label: 'Mens Wear Customisation', 
+      count: '65+ providers', 
+      color: 'text-teal-600', 
+      bg: 'bg-teal-100',
+      category: 'mens-wear-customisation',
+      image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=600&q=80',
+      description: 'Custom tailoring and fashion for men'
     }
   ];
 
