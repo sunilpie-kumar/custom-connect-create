@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import BusinessForm from '@/components/BusinessForm';
+import BusinessForm from '@/features/business/components/BusinessForm';
 import BusinessHistory from '@/components/BusinessHistory';
 
 const B2B = () => {

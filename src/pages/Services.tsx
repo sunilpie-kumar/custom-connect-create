@@ -1,15 +1,15 @@
-
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import ServiceCard from '@/components/ServiceCard';
-import AuthModal from '@/components/AuthModal';
+import AuthModal from '@/features/auth/components/AuthModal';
 import ChatModal from '@/components/ChatModal';
-import BookingModal from '@/components/BookingModal';
+import BookingModal from '@/features/services/components/BookingModal';
 import { ArrowLeft, Search, Filter, User, LogOut } from 'lucide-react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
+import type { ServiceProvider } from '@/features/services/types';
 
 interface ServiceProvider {
   id: string;

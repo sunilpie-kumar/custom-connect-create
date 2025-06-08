@@ -1,6 +1,6 @@
 
 import HeroSection from '@/components/HeroSection';
-import CategoryGrid from '@/components/CategoryGrid';
+import CategoryGrid from '@/features/home/components/CategoryGrid';
 import HowItWorks from '@/components/HowItWorks';
 import TestimonialsSection from '@/components/TestimonialsSection';
 import CTASection from '@/components/CTASection';
