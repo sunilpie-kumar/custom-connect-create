@@ -35,6 +35,12 @@ const categories = [
     color: "from-gray-600 to-gray-700"
   },
   {
+    title: "Art & Painting",
+    description: "Custom painters, murals, and artistic creations",
+    image: "https://images.unsplash.com/photo-1460661419201-fd4cecdf8a8b?auto=format&fit=crop&w=400&q=80",
+    color: "from-amber-500 to-orange-500"
+  },
+  {
     title: "More Services",
     description: "Discover other customization categories",
     image: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?auto=format&fit=crop&w=400&q=80",

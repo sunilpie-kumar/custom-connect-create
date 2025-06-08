@@ -21,7 +21,8 @@ import {
   Shield,
   ArrowRight,
   Palette,
-  Users
+  Users,
+  PaintBucket
 } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import ProfilePage from '@/components/ProfilePage';
@@ -42,6 +43,7 @@ const Dashboard = () => {
     { type: 'category', value: 'women-wear-customisation', label: 'Women Wear Customisation', icon: Shirt },
     { type: 'category', value: 'tattoo', label: 'Tattoo', icon: Palette },
     { type: 'category', value: 'mens-wear-customisation', label: 'Mens Wear Customisation', icon: Users },
+    { type: 'category', value: 'art-painting', label: 'Art & Painting', icon: PaintBucket },
     
     // Service Providers
     { type: 'provider', value: 'sarah-johnson', label: 'Sarah Johnson - Elite Interior Design', category: 'house-interior' },
@@ -50,6 +52,7 @@ const Dashboard = () => {
     { type: 'provider', value: 'meera-patel', label: 'Meera Patel - Fashion Forward', category: 'women-wear-customisation' },
     { type: 'provider', value: 'vikram-singh', label: 'Vikram Singh - BuildCraft Construction', category: 'house-construction' },
     { type: 'provider', value: 'anita-reddy', label: 'Anita Reddy - TechSolutions Pro', category: 'business-services' },
+    { type: 'provider', value: 'arjun-mishra', label: 'Arjun Mishra - Canvas & Brush Studio', category: 'art-painting' },
   ];
 
   const serviceCategories = [
@@ -132,6 +135,16 @@ const Dashboard = () => {
       category: 'mens-wear-customisation',
       image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=600&q=80',
       description: 'Custom tailoring and fashion for men'
+    },
+    { 
+      icon: PaintBucket, 
+      label: 'Art & Painting', 
+      count: '40+ providers', 
+      color: 'text-amber-600', 
+      bg: 'bg-amber-100',
+      category: 'art-painting',
+      image: 'https://images.unsplash.com/photo-1460661419201-fd4cecdf8a8b?auto=format&fit=crop&w=600&q=80',
+      description: 'Custom paintings, murals, and artistic creations'
     }
   ];
 

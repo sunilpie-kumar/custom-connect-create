@@ -115,6 +115,19 @@ const mockProviders: ServiceProvider[] = [
     description: 'Handcrafted personalized gifts and custom art pieces for special occasions.',
     price: '₹800+',
     verified: true
+  },
+  {
+    id: '9',
+    name: 'Arjun Mishra',
+    businessName: 'Canvas & Brush Studio',
+    category: 'art-painting',
+    rating: 4.8,
+    reviewCount: 92,
+    location: 'Jaipur, Rajasthan',
+    image: 'https://images.unsplash.com/photo-1460661419201-fd4cecdf8a8b?auto=format&fit=crop&w=400&q=80',
+    description: 'Custom paintings, murals, and artistic creations for homes and businesses.',
+    price: '₹2,500+',
+    verified: true
   }
 ];
 
@@ -124,10 +137,11 @@ const categoryMap: { [key: string]: string } = {
   'automotive': 'Automotive',
   'women-wear-customisation': 'Women Wear Customisation',
   'house-construction': 'House Construction',
-  'business-services': 'Business Services'
+  'business-services': 'Business Services',
+  'art-painting': 'Art & Painting'
 };
 
-const categories = ['All', 'House Interior', 'Automotive', 'Gifts Customisation', 'Women Wear Customisation', 'House Construction', 'Business Services'];
+const categories = ['All', 'House Interior', 'Automotive', 'Gifts Customisation', 'Women Wear Customisation', 'House Construction', 'Business Services', 'Art & Painting'];
 
 const Services = () => {
   const navigate = useNavigate();
