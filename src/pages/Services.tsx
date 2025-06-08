@@ -11,20 +11,6 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 import type { ServiceProvider } from '@/features/services/types';
 
-interface ServiceProvider {
-  id: string;
-  name: string;
-  businessName: string;
-  category: string;
-  rating: number;
-  reviewCount: number;
-  location: string;
-  image: string;
-  description: string;
-  price: string;
-  verified: boolean;
-}
-
 const mockProviders: ServiceProvider[] = [
   {
     id: '1',
