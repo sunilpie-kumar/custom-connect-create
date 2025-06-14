@@ -1,6 +1,6 @@
 
 // client/src/api/index.js
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001/api/v1';
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5002/api/v1';
 
 export const apiEndpoints = {
   auth: {
@@ -16,6 +16,15 @@ export const apiEndpoints = {
     getMessages: `${API_URL}/messages`,
     sendMessage: `${API_URL}/messages`,
     getMessage: (id) => `${API_URL}/messages/${id}`,
+  },
+  providers: {
+    register: `${API_URL}/providers`,
+    getAll: `${API_URL}/providers`,
+    getById: (id) => `${API_URL}/providers/${id}`,
+    update: (id) => `${API_URL}/providers/${id}`,
+    updateStatus: (id) => `${API_URL}/providers/${id}/status`,
+    delete: (id) => `${API_URL}/providers/${id}`,
+    search: `${API_URL}/providers/search`,
   },
 };
 
