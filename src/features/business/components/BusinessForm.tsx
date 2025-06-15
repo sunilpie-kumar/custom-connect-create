@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -8,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Upload, FileVideo, Image, CheckCircle, AlertCircle } from 'lucide-react';
 import { apiCall, apiEndpoints } from '@/api';
+import { useToast } from '@/hooks/use-toast';
 
 const categories = [
   'House Decor',
@@ -20,6 +20,8 @@ const categories = [
 ];
 
 const BusinessForm = () => {
+  const { toast } = useToast();
+  
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -71,6 +73,13 @@ const BusinessForm = () => {
       if (response.success) {
         console.log('Provider registered successfully:', response);
         setSubmitStatus('success');
+        
+        // Show success toast
+        toast({
+          title: "Registration Successful!",
+          description: "Your provider application has been submitted and is under review. We'll contact you within 24-48 hours.",
+          duration: 5000,
+        });
         
         // Reset form
         setFormData({
