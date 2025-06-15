@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -31,7 +32,8 @@ const BusinessForm = () => {
     experience_years: '',
     location: '',
     description: '',
-    website: ''
+    website: '',
+    gst_number: ''
   });
 
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
@@ -91,7 +93,8 @@ const BusinessForm = () => {
           experience_years: '',
           location: '',
           description: '',
-          website: ''
+          website: '',
+          gst_number: ''
         });
         setUploadedFiles([]);
       } else {
@@ -255,6 +258,16 @@ const BusinessForm = () => {
             </div>
 
             <div className="space-y-2">
+              <Label htmlFor="gst_number">GST Number (Optional)</Label>
+              <Input
+                id="gst_number"
+                value={formData.gst_number}
+                onChange={(e) => handleInputChange('gst_number', e.target.value)}
+                placeholder="Enter your GST number"
+              />
+            </div>
+
+            <div className="space-y-2 md:col-span-2">
               <Label htmlFor="website">Website (Optional)</Label>
               <Input
                 id="website"
