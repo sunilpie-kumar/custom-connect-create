@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -8,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Upload, FileVideo, Image, CheckCircle, AlertCircle } from 'lucide-react';
 import { apiCall, apiEndpoints } from '@/api';
+import { apiService } from '@/services/apiService';
 import { useToast } from '@/hooks/use-toast';
 
 const categories = [
@@ -65,12 +65,8 @@ const BusinessForm = () => {
         }
       }
 
-      // Submit provider registration
-      const response = await apiCall(
-        apiEndpoints.providers.register,
-        'POST',
-        formData
-      );
+      // Submit provider registration using new API service
+      const response = await apiService.business.register(formData, uploadedFiles);
 
       if (response.success) {
         console.log('Provider registered successfully:', response);
