@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp';
-import { apiEndpoints, apiCall } from '../../../api';
+import { apiService } from '@/services/apiService';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001/api/v1';
 
@@ -20,12 +20,13 @@ interface AuthResponse {
   qrCode?: string;
   manualCode?: string;
   token?: string;
+  user?: any;
   message?: string;
 }
 
 const AuthModal = ({ isOpen, onClose, onAuthenticated }: AuthModalProps) => {
   const [isSignUp, setIsSignUp] = useState(false);
-  const [step, setStep] = useState<'form' | 'otp'>('form'); //register verify
+  const [step, setStep] = useState<'form' | 'otp'>('form');
   const [form, setForm] = useState({ name: '', email: '', phone: '' });
   const [error, setError] = useState('');
   const [phone, setPhone] = useState('');
@@ -36,7 +37,6 @@ const AuthModal = ({ isOpen, onClose, onAuthenticated }: AuthModalProps) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Simulate sending OTP
     console.log('Sending OTP to:', form.phone);
     setStep('otp');
   };
@@ -44,12 +44,14 @@ const AuthModal = ({ isOpen, onClose, onAuthenticated }: AuthModalProps) => {
   const handleOTPSubmit = async () => {
     setError('');
     try {
-      const response = await apiCall(apiEndpoints.auth.verifyOTP, 'POST', { phone, otp });
-      localStorage.setItem('token', response.token);
-      localStorage.setItem('user', JSON.stringify(response.user));
-      onAuthenticated();
-      onClose();
-      resetForm();
+      const response = await apiService.auth.verifyOTP(phone, otp);
+      if (response.success && response.data) {
+        localStorage.setItem('token', response.data.token || '');
+        localStorage.setItem('user', JSON.stringify(response.data.user || {}));
+        onAuthenticated();
+        onClose();
+        resetForm();
+      }
     } catch (err) {
       setError('Invalid OTP. Use 123456 for demo.');
     }
@@ -66,7 +68,6 @@ const AuthModal = ({ isOpen, onClose, onAuthenticated }: AuthModalProps) => {
     resetForm();
     onClose();
   };
-
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -110,8 +111,7 @@ const AuthModal = ({ isOpen, onClose, onAuthenticated }: AuthModalProps) => {
         </DialogHeader>
 
         {step === 'form' ? (
-          // handleSubmit
-          <form onSubmit={ handleRegister } className="space-y-4">
+          <form onSubmit={handleRegister} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="phone">Phone Number</Label>
               <Input
@@ -191,9 +191,6 @@ const AuthModal = ({ isOpen, onClose, onAuthenticated }: AuthModalProps) => {
           <div className="space-y-4">
             <h2>Scan QR and Enter OTP</h2>
             {qrCode && <img src={qrCode} alt="QR Code" />}
-            {/* <p className="text-sm text-gray-600">
-              Enter the 6-digit OTP sent to {form.phone}
-            </p> */}
 
             <div className="flex justify-center">
               <InputOTP
@@ -213,7 +210,6 @@ const AuthModal = ({ isOpen, onClose, onAuthenticated }: AuthModalProps) => {
             </div>
 
             <Button
-              // onClick={handleOTPSubmit}
               onClick={handleVerify}
               className="w-full"
               disabled={otp.length !== 6}
