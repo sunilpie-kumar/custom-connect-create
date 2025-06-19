@@ -24,6 +24,11 @@ interface AuthResponse {
   message?: string;
 }
 
+interface AuthData {
+  token: string;
+  user: any;
+}
+
 const AuthModal = ({ isOpen, onClose, onAuthenticated }: AuthModalProps) => {
   const [isSignUp, setIsSignUp] = useState(false);
   const [step, setStep] = useState<'form' | 'otp'>('form');
@@ -46,8 +51,9 @@ const AuthModal = ({ isOpen, onClose, onAuthenticated }: AuthModalProps) => {
     try {
       const response = await apiService.auth.verifyOTP(phone, otp);
       if (response.success && response.data) {
-        localStorage.setItem('token', response.data.token || '');
-        localStorage.setItem('user', JSON.stringify(response.data.user || {}));
+        const authData = response.data as AuthData;
+        localStorage.setItem('token', authData.token || '');
+        localStorage.setItem('user', JSON.stringify(authData.user || {}));
         onAuthenticated();
         onClose();
         resetForm();
