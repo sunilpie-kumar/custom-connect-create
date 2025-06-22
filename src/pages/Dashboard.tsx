@@ -22,7 +22,9 @@ import {
   ArrowRight,
   Palette,
   Users,
-  PaintBucket
+  PaintBucket,
+  Bell,
+  Settings
 } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import ProfilePage from '@/components/ProfilePage';
@@ -64,7 +66,8 @@ const Dashboard = () => {
       bg: 'bg-blue-100',
       category: 'house-interior',
       image: 'https://images.unsplash.com/photo-1721322800607-8c38375eef04?auto=format&fit=crop&w=600&q=80',
-      description: 'Transform your space with expert interior designers'
+      description: 'Transform your space with expert interior designers',
+      trending: true
     },
     { 
       icon: Gift, 
@@ -225,106 +228,167 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
-      {/* Header */}
-      <div className="bg-white/80 backdrop-blur-sm shadow-sm border-b border-slate-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/50">
+      {/* Enhanced Header */}
+      <header className="bg-white/90 backdrop-blur-md shadow-sm border-b border-slate-200/50 sticky top-0 z-40">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
-            <div>
-              <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-slate-900 via-blue-900 to-indigo-900 bg-clip-text text-transparent">
-                Welcome back, John!
-              </h1>
-              <p className="text-slate-600 mt-1">Discover trusted service providers in your area</p>
+            <div className="flex-1">
+              <div className="flex items-center gap-4 mb-2">
+                <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
+                  <span className="text-white font-bold text-lg">K</span>
+                </div>
+                <div>
+                  <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-slate-900 via-blue-900 to-indigo-900 bg-clip-text text-transparent">
+                    Welcome back, John!
+                  </h1>
+                  <p className="text-slate-600 mt-1">Discover trusted service providers in your area</p>
+                </div>
+              </div>
             </div>
-            <div className="flex items-center gap-6">
-              <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
-                <div className="text-center p-4 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl flex-1 lg:flex-none">
+            
+            <div className="flex items-center gap-4">
+              <div className="hidden sm:flex flex-row gap-4">
+                <div className="text-center p-4 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl border border-blue-200 shadow-sm min-w-[120px]">
                   <div className="text-2xl font-bold text-blue-600">12</div>
                   <div className="text-sm text-slate-600">Services Booked</div>
                 </div>
-                <div className="text-center p-4 bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-xl flex-1 lg:flex-none">
+                <div className="text-center p-4 bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-xl border border-emerald-200 shadow-sm min-w-[120px]">
                   <div className="text-2xl font-bold text-emerald-600">3</div>
                   <div className="text-sm text-slate-600">Active Requests</div>
                 </div>
               </div>
-              <Button
-                variant="ghost"
-                onClick={() => setCurrentView('profile')}
-                className="p-0 h-auto rounded-full"
-              >
-                <Avatar className="h-12 w-12">
-                  <AvatarImage src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=150&q=80" alt="John Doe" />
-                  <AvatarFallback>JD</AvatarFallback>
-                </Avatar>
-              </Button>
+              
+              <div className="flex items-center gap-3">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="relative p-2 rounded-full hover:bg-slate-100"
+                  aria-label="View notifications"
+                >
+                  <Bell className="h-5 w-5 text-slate-600" />
+                  <span className="absolute -top-1 -right-1 h-4 w-4 bg-red-500 rounded-full flex items-center justify-center text-xs text-white">
+                    2
+                  </span>
+                </Button>
+                
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="p-2 rounded-full hover:bg-slate-100"
+                  aria-label="Settings"
+                >
+                  <Settings className="h-5 w-5 text-slate-600" />
+                </Button>
+                
+                <Button
+                  variant="ghost"
+                  onClick={() => setCurrentView('profile')}
+                  className="p-0 h-auto rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                  aria-label="View profile"
+                >
+                  <Avatar className="h-12 w-12 border-2 border-white shadow-md">
+                    <AvatarImage src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=150&q=80" alt="John Doe profile picture" />
+                    <AvatarFallback className="bg-gradient-to-r from-blue-500 to-purple-500 text-white">JD</AvatarFallback>
+                  </Avatar>
+                </Button>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      </header>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Left Column */}
+          {/* Left Column - Main Content */}
           <div className="lg:col-span-2 space-y-8">
-            {/* Search Services */}
-            <Card className="border-0 shadow-lg bg-white/70 backdrop-blur-sm">
+            {/* Enhanced Search Services */}
+            <Card className="border-0 shadow-xl bg-white/80 backdrop-blur-sm hover:shadow-2xl transition-all duration-300">
               <CardHeader className="pb-4">
-                <CardTitle className="text-xl text-slate-800 flex items-center gap-2">
-                  <Search className="h-5 w-5 text-blue-600" />
-                  Search Services / Providers
+                <CardTitle className="text-xl text-slate-800 flex items-center gap-3">
+                  <div className="p-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg">
+                    <Search className="h-5 w-5 text-white" />
+                  </div>
+                  Search Services & Providers
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <Button
                   variant="outline"
                   onClick={() => setOpen(true)}
-                  className="w-full justify-start text-slate-500 h-12 bg-slate-50 hover:bg-slate-100 border-slate-200"
+                  className="w-full justify-start text-slate-500 h-14 bg-slate-50/80 hover:bg-slate-100 border-slate-200 rounded-xl text-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                  aria-label="Open search dialog"
                 >
-                  <Search className="h-4 w-4 mr-3" />
+                  <Search className="h-5 w-5 mr-4" />
                   Search for services or providers...
                 </Button>
               </CardContent>
             </Card>
 
-            {/* Service Categories - Updated to List Form with Image Cards */}
-            <Card className="border-0 shadow-lg bg-white/70 backdrop-blur-sm">
+            {/* Enhanced Service Categories */}
+            <Card className="border-0 shadow-xl bg-white/80 backdrop-blur-sm">
               <CardHeader className="pb-4">
-                <CardTitle className="text-xl text-slate-800">Browse Service Categories</CardTitle>
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-xl text-slate-800 flex items-center gap-3">
+                    <TrendingUp className="h-6 w-6 text-green-600" />
+                    Browse Service Categories
+                  </CardTitle>
+                  <span className="text-sm text-slate-500 bg-slate-100 px-3 py-1 rounded-full">
+                    9 Categories
+                  </span>
+                </div>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
+                <div className="grid gap-4">
                   {serviceCategories.map((category, index) => (
                     <div
                       key={index}
                       onClick={() => handleCategoryClick(category.category)}
-                      className="group relative overflow-hidden rounded-xl bg-white shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer hover:scale-[1.02]"
+                      className="group relative overflow-hidden rounded-2xl bg-white shadow-sm hover:shadow-xl transition-all duration-300 cursor-pointer hover:scale-[1.01] border border-slate-100"
+                      role="button"
+                      tabIndex={0}
+                      onKeyDown={(e) => e.key === 'Enter' && handleCategoryClick(category.category)}
+                      aria-label={`Browse ${category.label} services`}
                     >
                       <div className="flex items-center">
-                        {/* Image Section */}
-                        <div className="relative w-32 h-24 flex-shrink-0">
+                        {/* Enhanced Image Section */}
+                        <div className="relative w-32 h-28 flex-shrink-0 overflow-hidden">
                           <img 
                             src={category.image} 
-                            alt={category.label}
-                            className="w-full h-full object-cover"
+                            alt={`${category.label} service preview`}
+                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                            loading="lazy"
                           />
-                          <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all duration-300"></div>
-                          <div className={`absolute top-3 left-3 p-2 ${category.bg} rounded-lg`}>
-                            <category.icon className={`h-4 w-4 ${category.color}`} />
+                          <div className="absolute inset-0 bg-gradient-to-r from-black/10 to-transparent group-hover:from-black/5 transition-all duration-300"></div>
+                          <div className={`absolute top-3 left-3 p-2.5 ${category.bg} rounded-xl shadow-sm border border-white/50`}>
+                            <category.icon className={`h-5 w-5 ${category.color}`} />
                           </div>
+                          {category.trending && (
+                            <div className="absolute top-3 right-3 bg-gradient-to-r from-green-500 to-emerald-500 text-white text-xs px-2 py-1 rounded-full font-medium shadow-sm">
+                              Trending
+                            </div>
+                          )}
                         </div>
                         
-                        {/* Content Section */}
-                        <div className="flex-1 p-4">
+                        {/* Enhanced Content Section */}
+                        <div className="flex-1 p-5">
                           <div className="flex items-center justify-between">
                             <div className="flex-1">
-                              <h3 className="font-semibold text-slate-800 text-lg mb-1">{category.label}</h3>
-                              <p className="text-sm text-slate-600 mb-2">{category.description}</p>
-                              <span className="text-xs font-medium text-slate-500 bg-slate-100 px-2 py-1 rounded-full">
-                                {category.count}
-                              </span>
-                            </div>
-                            <div className="flex items-center text-slate-400 group-hover:text-slate-600 transition-colors duration-300">
-                              <ArrowRight className="h-5 w-5" />
+                              <h3 className="font-bold text-slate-800 text-lg mb-2 group-hover:text-blue-600 transition-colors duration-200">
+                                {category.label}
+                              </h3>
+                              <p className="text-sm text-slate-600 mb-3 line-clamp-2 leading-relaxed">
+                                {category.description}
+                              </p>
+                              <div className="flex items-center justify-between">
+                                <span className="text-xs font-semibold text-slate-500 bg-slate-100 px-3 py-1.5 rounded-full">
+                                  {category.count}
+                                </span>
+                                <div className="flex items-center text-slate-400 group-hover:text-blue-600 transition-colors duration-300">
+                                  <span className="text-sm font-medium mr-2">Explore</span>
+                                  <ArrowRight className="h-4 w-4" />
+                                </div>
+                              </div>
                             </div>
                           </div>
                         </div>
@@ -336,7 +400,7 @@ const Dashboard = () => {
             </Card>
           </div>
 
-          {/* Right Column */}
+          {/* Right Column - Sidebar */}
           <div className="space-y-8">
             {/* Upcoming Appointments */}
             <Card className="border-0 shadow-lg bg-white/70 backdrop-blur-sm">
@@ -374,12 +438,17 @@ const Dashboard = () => {
               </CardContent>
             </Card>
 
-            {/* New Providers */}
-            <Card className="border-0 shadow-lg bg-white/70 backdrop-blur-sm">
+            {/* Enhanced New Providers */}
+            <Card className="border-0 shadow-xl bg-white/80 backdrop-blur-sm">
               <CardHeader className="pb-4">
-                <CardTitle className="flex items-center space-x-2 text-xl text-slate-800">
-                  <UserPlus className="h-5 w-5 text-green-600" />
+                <CardTitle className="flex items-center space-x-3 text-xl text-slate-800">
+                  <div className="p-2 bg-gradient-to-r from-green-500 to-emerald-500 rounded-lg">
+                    <UserPlus className="h-5 w-5 text-white" />
+                  </div>
                   <span>New Providers</span>
+                  <span className="bg-green-100 text-green-700 text-xs px-2 py-1 rounded-full">
+                    Fresh
+                  </span>
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -415,21 +484,31 @@ const Dashboard = () => {
                     </div>
                   ))}
                 </div>
-                <Button className="w-full mt-6 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white border-0 shadow-md hover:shadow-lg transition-all duration-200">
+                <Button className="w-full mt-6 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white border-0 shadow-md hover:shadow-lg transition-all duration-200 h-12 rounded-xl font-semibold">
                   Explore All New Providers
                 </Button>
               </CardContent>
             </Card>
           </div>
         </div>
-      </div>
+      </main>
 
-      {/* Search Command Dialog */}
+      {/* Enhanced Search Command Dialog */}
       <CommandDialog open={open} onOpenChange={setOpen}>
-        <CommandInput placeholder="Search for services or providers..." />
-        <CommandList>
-          <CommandEmpty>No results found.</CommandEmpty>
-          <CommandGroup heading="Categories">
+        <div className="border-b border-slate-200 p-4">
+          <CommandInput 
+            placeholder="Search for services or providers..." 
+            className="text-lg border-0 focus:ring-0"
+          />
+        </div>
+        <CommandList className="max-h-96">
+          <CommandEmpty className="py-8 text-center text-slate-500">
+            <div className="flex flex-col items-center gap-2">
+              <Search className="h-8 w-8 text-slate-300" />
+              <span>No results found.</span>
+            </div>
+          </CommandEmpty>
+          <CommandGroup heading="Categories" className="p-2">
             {searchData.filter(item => item.type === 'category').map((item) => (
               <CommandItem key={item.value} onSelect={() => handleSearchSelect(item)}>
                 <item.icon className="mr-2 h-4 w-4" />
@@ -437,7 +516,7 @@ const Dashboard = () => {
               </CommandItem>
             ))}
           </CommandGroup>
-          <CommandGroup heading="Service Providers">
+          <CommandGroup heading="Service Providers" className="p-2">
             {searchData.filter(item => item.type === 'provider').map((item) => (
               <CommandItem key={item.value} onSelect={() => handleSearchSelect(item)}>
                 <User className="mr-2 h-4 w-4" />
