@@ -97,7 +97,17 @@ export const API_ENDPOINTS = {
       url: `${API_BASE_URL}/business/register`,
       method: 'POST',
       description: 'Register a new business provider',
-      parameters: ['name', 'email', 'businessName', 'category', 'gstNumber', 'description', 'files']
+      parameters: [
+        'name',
+        'email',
+        'phone',
+        'company_name',
+        'service_type',
+        'experience_years',
+        'location',
+        'description',
+        'website' // optional
+      ]
     },
     getProfile: {
       url: (id: string) => `${API_BASE_URL}/business/${id}`,

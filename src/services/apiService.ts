@@ -210,16 +210,19 @@ class ApiService {
    */
   business = {
     register: (businessData: any, files?: File[]) => {
-      const formData = new FormData();
-      Object.entries(businessData).forEach(([key, value]) => {
-        if (value !== undefined && value !== null) {
-          formData.append(key, String(value));
-        }
-      });
-      if (files) {
+      if (files && files.length > 0) {
+        const formData = new FormData();
+        Object.entries(businessData).forEach(([key, value]) => {
+          if (value !== undefined && value !== null) {
+            formData.append(key, String(value));
+          }
+        });
         files.forEach(file => formData.append('files', file));
+        return this.post(API_ENDPOINTS.business.register.url, formData, true);
+      } else {
+        // Send as JSON if no files
+        return this.post(API_ENDPOINTS.business.register.url, businessData);
       }
-      return this.post(API_ENDPOINTS.business.register.url, formData, true);
     },
     getProfile: (id: string) => this.get(API_ENDPOINTS.business.getProfile.url(id)),
     update: (id: string, data: any, files?: File[]) => {

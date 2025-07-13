@@ -32,7 +32,6 @@ const BusinessForm = () => {
     experience_years: '',
     location: '',
     description: '',
-    website: '',
     gst_number: ''
   });
 
@@ -101,7 +100,6 @@ const BusinessForm = () => {
             experience_years: '',
             location: '',
             description: '',
-            website: '',
             gst_number: ''
           });
           setUploadedFiles([]);

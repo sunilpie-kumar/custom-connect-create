@@ -14,6 +14,16 @@ const providerSchema = new mongoose.Schema({
     lowercase: true,
     match: [/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/, 'Please enter a valid email']
   },
+  emailVerified: {
+    type: Boolean,
+    default: false,
+  },
+  emailVerificationToken: {
+    type: String,
+  },
+  emailVerificationExpires: {
+    type: Date,
+  },
   phone: {
     type: String,
     required: [true, 'Phone number is required'],
@@ -47,11 +57,6 @@ const providerSchema = new mongoose.Schema({
     required: [true, 'Business description is required'],
     trim: true,
     maxlength: [2000, 'Description cannot exceed 2000 characters']
-  },
-  website: {
-    type: String,
-    trim: true,
-    match: [/^https?:\/\/.+/, 'Please enter a valid website URL']
   },
   status: {
     type: String,
@@ -88,4 +93,3 @@ providerSchema.index({ status: 1 });
 providerSchema.index({ created_at: -1 });
 
 module.exports = mongoose.model('Provider', providerSchema);
-

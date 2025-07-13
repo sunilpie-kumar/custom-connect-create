@@ -24,9 +24,9 @@ class TwilioOTPService {
 
   constructor() {
     this.config = {
-      accountSid: process.env.TWILIO_ACCOUNT_SID!,
-      authToken: process.env.TWILIO_AUTH_TOKEN!,
-      whatsappNumber: process.env.TWILIO_PHONE_NUMBER!
+      accountSid: import.meta.env.VITE_TWILIO_ACCOUNT_SID!,
+      authToken: import.meta.env.VITE_TWILIO_AUTH_TOKEN!,
+      whatsappNumber: import.meta.env.VITE_TWILIO_PHONE_NUMBER!
     };
   }
 

@@ -50,6 +50,9 @@ app.get('/', (req, res) => {
 const providerRoutes = require('./routes/providers');
 app.use('/api/v1/providers', providerRoutes);
 
+const businessRoutes = require('./routes/business');
+app.use('/api/v1/business', businessRoutes);
+
 // 404 handler
 app.use('*', (req, res) => {
   res.status(404).json({

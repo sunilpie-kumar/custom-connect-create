@@ -1,6 +1,8 @@
 const express = require('express');
 const { body, validationResult } = require('express-validator');
 const Provider = require('../models/Provider');
+const crypto = require('crypto');
+const sendEmail = require('../utils/sendEmail');
 
 const router = express.Router();
 
@@ -91,7 +93,27 @@ router.post('/', validateProvider, async (req, res) => {
       website: website || undefined
     });
 
+    // Generate token
+    const token = crypto.randomBytes(32).toString('hex');
+    const tokenExpires = Date.now() + 1000 * 60 * 60 * 24; // 24 hours
+    provider.emailVerificationToken = token;
+    provider.emailVerificationExpires = tokenExpires;
+    provider.emailVerified = false;
     await provider.save();
+
+    // Send verification email
+    const verifyUrl = `${process.env.FRONTEND_URL}/verify-email?token=${token}&email=${encodeURIComponent(provider.email)}`;
+    const html = `
+      <h1>Verify your email</h1>
+      <p>Click the link below to verify your email address:</p>
+      <a href="${verifyUrl}">Verify Email</a>
+      <p>This link will expire in 24 hours.</p>
+    `;
+    await sendEmail({
+      to: provider.email,
+      subject: 'Verify your email address',
+      html,
+    });
 
     res.status(201).json({
       success: true,
@@ -376,6 +398,105 @@ router.delete('/:id', async (req, res) => {
       message: 'Server error occurred while deleting provider'
     });
   }
+});
+
+// @route   POST /api/v1/business/register
+// @desc    Register a new business (same as provider)
+// @access  Public
+router.post('/business/register', validateProvider, async (req, res) => {
+  // Reuse the provider registration logic
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({
+        success: false,
+        message: 'Validation failed',
+        errors: errors.array()
+      });
+    }
+
+    const {
+      name,
+      email,
+      phone,
+      company_name,
+      service_type,
+      experience_years,
+      location,
+      description,
+      website
+    } = req.body;
+
+    const existingProvider = await Provider.findOne({ email });
+    if (existingProvider) {
+      return res.status(400).json({
+        success: false,
+        message: 'Provider with this email already exists'
+      });
+    }
+
+    const provider = new Provider({
+      name,
+      email,
+      phone,
+      company_name,
+      service_type,
+      experience_years: parseInt(experience_years),
+      location,
+      description,
+      website: website || undefined
+    });
+
+    await provider.save();
+
+    res.status(201).json({
+      success: true,
+      message: 'Business registered successfully',
+      data: {
+        id: provider._id,
+        name: provider.name,
+        email: provider.email,
+        company_name: provider.company_name,
+        service_type: provider.service_type,
+        status: provider.status,
+        created_at: provider.created_at
+      }
+    });
+  } catch (error) {
+    console.error('Error registering business:', error);
+    if (error.code === 11000) {
+      return res.status(400).json({
+        success: false,
+        message: 'Provider with this email already exists'
+      });
+    }
+    res.status(500).json({
+      success: false,
+      message: 'Server error occurred while registering business'
+    });
+  }
+});
+
+// Add the verification endpoint:
+router.get('/verify-email', async (req, res) => {
+  const { token, email } = req.query;
+  const provider = await Provider.findOne({
+    email,
+    emailVerificationToken: token,
+    emailVerificationExpires: { $gt: Date.now() },
+  });
+
+  if (!provider) {
+    return res.status(400).send('Invalid or expired verification link.');
+  }
+
+  provider.emailVerified = true;
+  provider.emailVerificationToken = undefined;
+  provider.emailVerificationExpires = undefined;
+  await provider.save();
+
+  // Optionally, redirect to frontend success page
+  res.redirect(`${process.env.FRONTEND_URL}/verify-email-success`);
 });
 
 module.exports = router;
