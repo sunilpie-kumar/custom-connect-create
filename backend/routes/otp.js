@@ -67,7 +67,7 @@ router.post("/send", validatePhoneNumber, async (req, res) => {
       .verifications
       .create({
         to: phoneNumber,
-        channel: "sms"
+        channel: "whatsapp"
       });
 
     res.json({

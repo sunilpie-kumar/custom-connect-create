@@ -113,7 +113,7 @@ export const EXTERNAL_URLS = {
  * API Base URLs (for different environments)
  */
 export const API_BASE_URLS = {
-  development: 'http://localhost:5002/api/v1',
+  development: 'http://localhost:5001/api/v1',
   staging: 'https://api-staging.kustom.com/v1',
   production: 'https://api.kustom.com/v1',
 } as const;

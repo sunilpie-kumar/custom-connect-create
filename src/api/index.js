@@ -1,6 +1,6 @@
 
 // client/src/api/index.js
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5002/api/v1';
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001/api/v1';
 
 export const apiEndpoints = {
   auth: {
