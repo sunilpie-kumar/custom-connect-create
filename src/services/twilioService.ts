@@ -2,7 +2,6 @@
  * Twilio WhatsApp OTP Service
  * Handles OTP generation and sending via WhatsApp using Twilio API
  */
-import { TWILIO_DATA } from "../config/twilioConst";
 
 interface TwilioConfig {
   accountSid: string;
@@ -25,9 +24,9 @@ class TwilioOTPService {
 
   constructor() {
     this.config = {
-      accountSid: TWILIO_DATA.TWILIO_ACCOUNT_SID,
-      authToken: TWILIO_DATA.TWILIO_AUTH_TOKEN,
-      whatsappNumber: TWILIO_DATA.TWILIO_PHONE_NUMBER
+      accountSid: process.env.TWILIO_ACCOUNT_SID!,
+      authToken: process.env.TWILIO_AUTH_TOKEN!,
+      whatsappNumber: process.env.TWILIO_PHONE_NUMBER!
     };
   }
 
