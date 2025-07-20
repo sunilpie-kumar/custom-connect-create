@@ -477,6 +477,52 @@ router.post('/business/register', validateProvider, async (req, res) => {
   }
 });
 
+// @route   GET /api/v1/providers/check-phone
+// @desc    Check if provider exists by phone number
+// @access  Public
+router.get('/check-phone', async (req, res) => {
+  try {
+    const { phone } = req.query;
+    
+    if (!phone) {
+      return res.status(400).json({
+        success: false,
+        message: 'Phone number is required'
+      });
+    }
+
+    const provider = await Provider.findOne({ phone }).select('-__v');
+    
+    if (provider) {
+      return res.json({
+        success: true,
+        exists: true,
+        provider: {
+          id: provider._id,
+          name: provider.name,
+          email: provider.email,
+          phone: provider.phone,
+          company_name: provider.company_name,
+          service_type: provider.service_type,
+          status: provider.status,
+          emailVerified: provider.emailVerified
+        }
+      });
+    } else {
+      return res.json({
+        success: true,
+        exists: false
+      });
+    }
+  } catch (error) {
+    console.error('Error checking provider phone:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error occurred while checking phone number'
+    });
+  }
+});
+
 // Add the verification endpoint:
 router.get('/verify-email', async (req, res) => {
   const { token, email } = req.query;

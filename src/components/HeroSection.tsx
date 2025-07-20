@@ -108,7 +108,7 @@ const HeroSection = () => {
               <Button 
                 variant="outline" 
                 size="lg"
-                onClick={() => navigate('/b2b')}
+                onClick={() => navigate('/provider-auth')}
                 className="border-2 border-orange-500 text-orange-600 hover:bg-orange-50 hover:border-orange-600 px-8 py-4 text-lg font-semibold rounded-xl transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2"
                 aria-label="Register as a service provider and join our platform"
               >
