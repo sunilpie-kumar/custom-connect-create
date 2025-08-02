@@ -20,7 +20,7 @@ const validatePhoneNumber = [
   body("phoneNumber")
     .trim()
     .matches(/^\+[1-9]\d{1,14}$/)
-    .withMessage("Phone number must be in E.164 format (e.g., +1234567890)")
+    .withMessage("Phone number must be in E.164 format (e.g., +919620548555)")
 ];
 
 // Validation middleware for OTP verification
@@ -28,7 +28,7 @@ const validateOTPVerification = [
   body("phoneNumber")
     .trim()
     .matches(/^\+[1-9]\d{1,14}$/)
-    .withMessage("Phone number must be in E.164 format (e.g., +1234567890)"),
+    .withMessage("Phone number must be in E.164 format (e.g., +919620548555)"),
   body("code")
     .trim()
     .isLength({ min: 4, max: 6 })
@@ -53,6 +53,9 @@ router.post("/send", validatePhoneNumber, async (req, res) => {
 
     const { phoneNumber } = req.body;
 
+    // Use phone number directly as it already includes country code
+    const formattedPhone = phoneNumber;
+
     // Check if Twilio is properly configured
     if (!accountSid || !authToken || !serviceSid) {
       return res.status(500).json({
@@ -62,25 +65,56 @@ router.post("/send", validatePhoneNumber, async (req, res) => {
     }
 
     // Send OTP using Twilio Verify
-    const verification = await client.verify.v2
-      .services(serviceSid)
-      .verifications
-      .create({
-        to: phoneNumber,
-        channel: "whatsapp"
-      });
+    try {
+      // First try WhatsApp
+      const verification = await client.verify.v2
+        .services(serviceSid)
+        .verifications
+        .create({
+          to: formattedPhone,
+          channel: "whatsapp"
+        });
 
-    res.json({
-      success: true,
-      message: "OTP sent successfully",
-      data: {
-        sid: verification.sid,
-        status: verification.status,
-        to: verification.to,
-        channel: verification.channel,
-        valid: verification.valid
+      res.json({
+        success: true,
+        message: "OTP sent successfully via WhatsApp",
+        data: {
+          sid: verification.sid,
+          status: verification.status,
+          to: verification.to,
+          channel: verification.channel,
+          valid: verification.valid
+        }
+      });
+    } catch (whatsappError) {
+      console.log("WhatsApp failed, trying SMS:", whatsappError.message);
+      
+      // If WhatsApp fails, try SMS
+      try {
+        const verification = await client.verify.v2
+          .services(serviceSid)
+          .verifications
+          .create({
+            to: formattedPhone,
+            channel: "sms"
+          });
+
+        res.json({
+          success: true,
+          message: "OTP sent successfully via SMS",
+          data: {
+            sid: verification.sid,
+            status: verification.status,
+            to: verification.to,
+            channel: verification.channel,
+            valid: verification.valid
+          }
+        });
+      } catch (smsError) {
+        console.error("Both WhatsApp and SMS failed:", smsError);
+        throw smsError; // Re-throw the error to be handled by the outer catch
       }
-    });
+    }
 
   } catch (error) {
     console.error("Error sending OTP:", error);
@@ -110,6 +144,25 @@ router.post("/send", validatePhoneNumber, async (req, res) => {
           break;
         default:
           message = error.message || "Failed to send OTP";
+      }
+
+      // For development, provide a test OTP when Twilio fails
+      if (process.env.NODE_ENV === 'development' && (error.code === 21608 || error.code === 21614)) {
+        const testOTP = Math.floor(100000 + Math.random() * 900000).toString();
+        console.log(`🧪 DEVELOPMENT MODE: Test OTP for ${req.body.phoneNumber}: ${testOTP}`);
+        
+        return res.status(200).json({
+          success: true,
+          message: `Development mode: Test OTP sent (${testOTP})`,
+          data: {
+            sid: 'test_sid_' + Date.now(),
+            status: 'pending',
+            to: req.body.phoneNumber,
+            channel: 'sms',
+            valid: true,
+            test_otp: testOTP
+          }
+        });
       }
 
       return res.status(400).json({
@@ -143,6 +196,9 @@ router.post("/verify", validateOTPVerification, async (req, res) => {
 
     const { phoneNumber, code } = req.body;
 
+    // Use phone number directly as it already includes country code
+    const formattedPhone = phoneNumber;
+
     // Check if Twilio is properly configured
     if (!accountSid || !authToken || !serviceSid) {
       return res.status(500).json({
@@ -156,7 +212,7 @@ router.post("/verify", validateOTPVerification, async (req, res) => {
       .services(serviceSid)
       .verificationChecks
       .create({
-        to: phoneNumber,
+        to: formattedPhone,
         code: code
       });
 
@@ -207,6 +263,23 @@ router.post("/verify", validateOTPVerification, async (req, res) => {
           message = error.message || "Failed to verify OTP";
       }
 
+      // For development, allow any 6-digit code when Twilio fails
+      if (process.env.NODE_ENV === 'development' && req.body.code.length === 6 && /^\d{6}$/.test(req.body.code)) {
+        console.log(`🧪 DEVELOPMENT MODE: Accepting test OTP ${req.body.code} for ${req.body.phoneNumber}`);
+        
+        return res.json({
+          success: true,
+          message: "Development mode: OTP verified successfully",
+          data: {
+            sid: 'test_verify_sid_' + Date.now(),
+            status: 'approved',
+            to: req.body.phoneNumber,
+            channel: 'sms',
+            valid: true
+          }
+        });
+      }
+
       return res.status(400).json({
         success: false,
         message: message,
@@ -241,4 +314,3 @@ router.get("/status", (req, res) => {
 });
 
 module.exports = router;
-

@@ -5,7 +5,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { ArrowLeft, Phone, CheckCircle2, AlertCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
-import WhatsAppOTPModal from '@/components/WhatsAppOTPModal';
+import apiService from '@/services/apiService';
+// Remove ReactPhoneInput import and usage
+// import 'react-phone-input-2/lib/style.css';
 
 const ProviderAuth = () => {
   const [phone, setPhone] = useState('');
@@ -13,8 +15,17 @@ const ProviderAuth = () => {
   const [showOTP, setShowOTP] = useState(false);
   const [userExists, setUserExists] = useState<boolean | null>(null);
   const [providerData, setProviderData] = useState<any>(null);
+  const [otp, setOtp] = useState('');
+  const [otpLoading, setOtpLoading] = useState(false);
+  const [otpSent, setOtpSent] = useState(false);
+  // Remove countryCode state
   const navigate = useNavigate();
   const { toast } = useToast();
+
+  // Remove phone number sanitization since users will send with country code
+  const sanitizePhone = (input: string) => {
+    return input; // Just return the input as-is
+  };
 
   const checkProviderExists = async () => {
     if (!phone.trim()) {
@@ -25,20 +36,27 @@ const ProviderAuth = () => {
       });
       return;
     }
+    const cleanPhone = sanitizePhone(phone);
 
     setIsLoading(true);
     try {
       // Check if provider exists by phone
-      const response = await fetch(`/api/v1/providers/check-phone?phone=${encodeURIComponent(phone)}`);
-      const data = await response.json();
-      
+      const data = await apiService.providers.checkPhone(cleanPhone);
+      console.log("data", data)
       if (data.success) {
         if (data.exists) {
           setUserExists(true);
           setProviderData(data.provider);
           setShowOTP(true);
+          setOtpSent(false); // Reset OTP sent state
+          // Don't automatically send OTP - let user click button
         } else {
+          // Provider doesn't exist, but we can still send OTP for registration
           setUserExists(false);
+          setProviderData({ phone: cleanPhone }); // Create a basic provider object
+          setShowOTP(true);
+          setOtpSent(false);
+          // Don't automatically send OTP - let user click button
         }
       } else {
         throw new Error(data.message);
@@ -54,26 +72,69 @@ const ProviderAuth = () => {
     }
   };
 
-  const handleOTPSuccess = () => {
-    setShowOTP(false);
-    toast({
-      title: "Login Successful",
-      description: "Welcome back! Redirecting to your dashboard...",
-    });
+  // DRY WhatsApp OTP send logic (accepts phone param for auto-send)
+  const sendOTP = async (phoneOverride?: string) => {
+    const phoneToSend = phoneOverride || phone; // Use the input phone instead of providerData.phone
+    if (!phoneToSend) return;
     
-    // Store provider session data
-    localStorage.setItem('provider', JSON.stringify(providerData));
+    // Debug: Log the phone number being sent
+    console.log('Sending OTP to phone:', phoneToSend);
+    console.log('Phone input value:', phone);
+    console.log('Provider data phone:', providerData?.phone);
     
-    // Redirect to provider dashboard
-    setTimeout(() => {
-      navigate('/provider-dashboard');
-    }, 1000);
+    setOtpLoading(true);
+    try {
+      const res = await apiService.otp.send(phoneToSend);
+      if (res.success) {
+        toast({ title: "OTP Sent", description: "Check WhatsApp for your code." });
+        setOtpSent(true);
+      } else {
+        toast({ title: "OTP Error", description: res.message, variant: "destructive" });
+      }
+    } catch (err) {
+      console.error('OTP send error:', err);
+      toast({ title: "OTP Error", description: "Failed to send OTP", variant: "destructive" });
+    } finally {
+      setOtpLoading(false);
+    }
   };
 
-  const startSignUp = () => {
-    // Navigate to provider registration with phone pre-filled
-    navigate('/provider-signup', { state: { phone } });
+  // DRY WhatsApp OTP verify logic
+  const verifyOTP = async () => {
+    const phoneToVerify = providerData?.phone || phone;
+    if (!phoneToVerify || otp.length !== 6) return;
+    setOtpLoading(true);
+    try {
+      const res = await apiService.otp.verify(phoneToVerify, otp);
+      if (res.success) {
+        if (userExists) {
+          // Existing provider - login
+          toast({ title: "Login Successful", description: "Welcome back! Redirecting to your dashboard..." });
+          localStorage.setItem('provider', JSON.stringify(providerData));
+          setTimeout(() => {
+            navigate('/b2b', { state: { tab: 'dashboard' } });
+          }, 1000);
+        } else {
+          // New provider - redirect to registration
+          toast({ title: "OTP Verified", description: "Redirecting to registration..." });
+          setTimeout(() => {
+            navigate('/b2b', { state: { tab: 'register', phone: phoneToVerify } });
+          }, 1000);
+        }
+      } else {
+        toast({ title: "OTP Error", description: res.message || "Invalid OTP", variant: "destructive" });
+      }
+    } catch (err) {
+      toast({ title: "OTP Error", description: "Failed to verify OTP", variant: "destructive" });
+    } finally {
+      setOtpLoading(false);
+    }
   };
+
+  // const startSignUp = () => {
+  //   // Redirect to B2B registration tab with phone pre-filled
+  //   navigate('/b2b', { state: { tab: 'register', phone } });
+  // };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-orange-50 dark:from-blue-950 dark:via-purple-950 dark:to-orange-950 flex items-center justify-center p-4 relative overflow-hidden">
@@ -116,38 +177,39 @@ const ProviderAuth = () => {
           </CardHeader>
 
           <CardContent className="space-y-6 relative z-10">
-            {/* Phone Input Section */}
-            <div className="space-y-4">
-              <div>
-                <label htmlFor="phone" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Phone Number
-                </label>
-                <Input
-                  id="phone"
-                  type="tel"
-                  placeholder="+1 (555) 123-4567"
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  className="h-12 text-center text-lg border-2 border-gray-200 focus:border-blue-500 transition-colors duration-300"
-                />
+            {/* Phone Input Section - only show if userExists is null */}
+            {userExists === null && (
+              <div className="space-y-4">
+                <div>
+                  <label htmlFor="phone" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Phone Number
+                  </label>
+                  <Input
+                    id="phone"
+                    type="tel"
+                    placeholder="e.g. +919620548555"
+                    value={phone}
+                    onChange={e => setPhone(sanitizePhone(e.target.value))}
+                    className="h-12 text-center text-lg border-2 border-gray-200 focus:border-blue-500 transition-colors duration-300"
+                  />
+                </div>
+                <Button 
+                  onClick={checkProviderExists}
+                  disabled={isLoading}
+                  className="w-full h-12 text-base font-semibold bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg transform hover:scale-105 transition-all duration-300"
+                >
+                  {isLoading ? (
+                    <div className="flex items-center gap-2">
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      Verifying...
+                    </div>
+                  ) : "Continue"}
+                </Button>
               </div>
-
-              <Button 
-                onClick={checkProviderExists}
-                disabled={isLoading}
-                className="w-full h-12 text-base font-semibold bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg transform hover:scale-105 transition-all duration-300"
-              >
-                {isLoading ? (
-                  <div className="flex items-center gap-2">
-                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                    Verifying...
-                  </div>
-                ) : "Continue"}
-              </Button>
-            </div>
+            )}
 
             {/* User Status Messages */}
-            {userExists === false && (
+            {/* {userExists === false && (
               <div className="space-y-4 p-4 bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-950/20 dark:to-orange-950/20 rounded-lg border-2 border-amber-200 dark:border-amber-800 shadow-lg">
                 <div className="flex items-start space-x-3">
                   <div className="p-1 bg-amber-100 dark:bg-amber-900 rounded-full">
@@ -170,23 +232,75 @@ const ProviderAuth = () => {
                   Create New Provider Account
                 </Button>
               </div>
-            )}
+            )} */}
 
-            {userExists === true && providerData && (
-              <div className="space-y-4 p-4 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-950/20 dark:to-emerald-950/20 rounded-lg border-2 border-green-200 dark:border-green-800 shadow-lg">
+            {(userExists === true || userExists === false) && providerData && (
+              <div className={`space-y-4 p-4 rounded-lg border-2 shadow-lg ${
+                userExists 
+                  ? 'bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-950/20 dark:to-emerald-950/20 border-green-200 dark:border-green-800'
+                  : 'bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-950/20 dark:to-purple-950/20 border-blue-200 dark:border-blue-800'
+              }`}>
                 <div className="flex items-start space-x-3">
-                  <div className="p-1 bg-green-100 dark:bg-green-900 rounded-full">
-                    <CheckCircle2 className="h-5 w-5 text-green-600" />
+                  <div className={`p-1 rounded-full ${
+                    userExists 
+                      ? 'bg-green-100 dark:bg-green-900'
+                      : 'bg-blue-100 dark:bg-blue-900'
+                  }`}>
+                    {userExists ? (
+                      <CheckCircle2 className="h-5 w-5 text-green-600" />
+                    ) : (
+                      <Phone className="h-5 w-5 text-blue-600" />
+                    )}
                   </div>
                   <div>
-                    <p className="font-medium text-green-800 dark:text-green-200">
-                      Account Found
+                    <p className={`font-medium ${
+                      userExists 
+                        ? 'text-green-800 dark:text-green-200'
+                        : 'text-blue-800 dark:text-blue-200'
+                    }`}>
+                      {userExists ? 'Account Found' : 'New Provider'}
                     </p>
-                    <p className="text-sm text-green-700 dark:text-green-300 mt-1">
-                      Welcome back, {providerData.name}! Please verify with OTP.
+                    <p className={`text-sm mt-1 ${
+                      userExists 
+                        ? 'text-green-700 dark:text-green-300'
+                        : 'text-blue-700 dark:text-blue-300'
+                    }`}>
+                      {userExists 
+                        ? `Welcome back, ${providerData.name}! Please verify with OTP.`
+                        : 'No existing account found. Please verify your phone number to continue.'
+                      }
                     </p>
                   </div>
                 </div>
+                
+                {!otpSent ? (
+                  <Button
+                    onClick={() => sendOTP(sanitizePhone(phone))}
+                    disabled={otpLoading}
+                    className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg transform hover:scale-105 transition-all duration-300"
+                  >
+                    {otpLoading ? "Sending..." : "Send OTP"}
+                  </Button>
+                ) : (
+                  <div className="mt-4">
+                    <label htmlFor="otp" className="block text-sm font-medium text-gray-700">Enter OTP</label>
+                    <Input
+                      id="otp"
+                      type="text"
+                      value={otp}
+                      onChange={e => setOtp(e.target.value)}
+                      placeholder="Enter 6-digit OTP"
+                      className="h-12 text-center text-lg border-2 border-gray-200 focus:border-blue-500 transition-colors duration-300"
+                    />
+                    <Button
+                      onClick={verifyOTP}
+                      disabled={otpLoading || otp.length !== 6}
+                      className="mt-2 w-full"
+                    >
+                      {otpLoading ? "Verifying..." : "Verify OTP"}
+                    </Button>
+                  </div>
+                )}
               </div>
             )}
 
@@ -202,16 +316,6 @@ const ProviderAuth = () => {
             </div>
           </CardContent>
         </Card>
-
-        {/* OTP Modal */}
-        {showOTP && (
-          <WhatsAppOTPModal
-            isOpen={showOTP}
-            onClose={() => setShowOTP(false)}
-            onAuthenticated={handleOTPSuccess}
-            mode="signin"
-          />
-        )}
       </div>
     </div>
   );

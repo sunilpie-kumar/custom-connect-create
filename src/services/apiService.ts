@@ -4,6 +4,7 @@
  * Centralized API call management with error handling and request/response interceptors
  */
 
+import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { API_ENDPOINTS } from '@/config/apiEndpoints';
 
 // Types for API responses
@@ -18,6 +19,8 @@ export interface ApiResponse<T = any> {
     total_items: number;
     items_per_page: number;
   };
+  exists?: boolean;
+  provider?: any;
 }
 
 export interface ApiError {
@@ -27,14 +30,14 @@ export interface ApiError {
 }
 
 class ApiService {
-  private baseHeaders: HeadersInit = {
+  private baseHeaders: Record<string, string> = {
     'Content-Type': 'application/json',
   };
 
   /**
    * Get authorization headers with token
    */
-  private getAuthHeaders(): HeadersInit {
+  private getAuthHeaders(): Record<string, string> {
     const token = localStorage.getItem('token');
     return {
       ...this.baseHeaders,
@@ -45,31 +48,26 @@ class ApiService {
   /**
    * Handle API response and errors
    */
-  private async handleResponse<T>(response: Response): Promise<ApiResponse<T>> {
-    const contentType = response.headers.get('content-type');
-    
-    if (!response.ok) {
-      let errorMessage = `HTTP error! status: ${response.status}`;
-      
-      if (contentType && contentType.includes('application/json')) {
-        try {
-          const errorData = await response.json();
-          errorMessage = errorData.message || errorMessage;
-          throw new Error(JSON.stringify(errorData));
-        } catch (parseError) {
-          throw new Error(errorMessage);
-        }
-      } else {
-        const errorText = await response.text();
-        throw new Error(errorText || errorMessage);
-      }
-    }
+  private handleResponse<T>(response: AxiosResponse): ApiResponse<T> {
+    return response.data;
+  }
 
-    if (contentType && contentType.includes('application/json')) {
-      return await response.json();
+  /**
+   * Handle axios errors
+   */
+  private handleError(error: any): never {
+    if (error.response) {
+      // Server responded with error status
+      const errorData = error.response.data;
+      const errorMessage = errorData?.message || `HTTP error! status: ${error.response.status}`;
+      throw new Error(JSON.stringify(errorData || { message: errorMessage }));
+    } else if (error.request) {
+      // Request was made but no response received
+      throw new Error('Network error: No response received');
+    } else {
+      // Something else happened
+      throw new Error(error.message || 'An unexpected error occurred');
     }
-    
-    return { success: true, data: {} as T };
   }
 
   /**
@@ -77,30 +75,17 @@ class ApiService {
    */
   async get<T>(endpoint: string, params?: Record<string, any>): Promise<ApiResponse<T>> {
     try {
-      let url = endpoint;
-      
-      if (params) {
-        const searchParams = new URLSearchParams();
-        Object.entries(params).forEach(([key, value]) => {
-          if (value !== undefined && value !== null) {
-            searchParams.append(key, String(value));
-          }
-        });
-        const queryString = searchParams.toString();
-        if (queryString) {
-          url += `?${queryString}`;
-        }
-      }
-
-      const response = await fetch(url, {
+      const config: AxiosRequestConfig = {
         method: 'GET',
         headers: this.getAuthHeaders(),
-      });
+        params,
+      };
 
-      return await this.handleResponse<T>(response);
+      const response = await axios(endpoint, config);
+      return this.handleResponse<T>(response);
     } catch (error) {
       console.error('GET request error:', error);
-      throw error;
+      this.handleError(error);
     }
   }
 
@@ -113,18 +98,17 @@ class ApiService {
         { Authorization: localStorage.getItem('token') ? `Bearer ${localStorage.getItem('token')}` : '' } :
         this.getAuthHeaders();
 
-      const body = useFormData ? data : JSON.stringify(data);
-
-      const response = await fetch(endpoint, {
+      const config: AxiosRequestConfig = {
         method: 'POST',
         headers,
-        ...(data && { body }),
-      });
+        data,
+      };
 
-      return await this.handleResponse<T>(response);
+      const response = await axios(endpoint, config);
+      return this.handleResponse<T>(response);
     } catch (error) {
       console.error('POST request error:', error);
-      throw error;
+      this.handleError(error);
     }
   }
 
@@ -133,16 +117,17 @@ class ApiService {
    */
   async put<T>(endpoint: string, data?: any): Promise<ApiResponse<T>> {
     try {
-      const response = await fetch(endpoint, {
+      const config: AxiosRequestConfig = {
         method: 'PUT',
         headers: this.getAuthHeaders(),
-        ...(data && { body: JSON.stringify(data) }),
-      });
+        data,
+      };
 
-      return await this.handleResponse<T>(response);
+      const response = await axios(endpoint, config);
+      return this.handleResponse<T>(response);
     } catch (error) {
       console.error('PUT request error:', error);
-      throw error;
+      this.handleError(error);
     }
   }
 
@@ -151,16 +136,17 @@ class ApiService {
    */
   async patch<T>(endpoint: string, data?: any): Promise<ApiResponse<T>> {
     try {
-      const response = await fetch(endpoint, {
+      const config: AxiosRequestConfig = {
         method: 'PATCH',
         headers: this.getAuthHeaders(),
-        ...(data && { body: JSON.stringify(data) }),
-      });
+        data,
+      };
 
-      return await this.handleResponse<T>(response);
+      const response = await axios(endpoint, config);
+      return this.handleResponse<T>(response);
     } catch (error) {
       console.error('PATCH request error:', error);
-      throw error;
+      this.handleError(error);
     }
   }
 
@@ -169,15 +155,16 @@ class ApiService {
    */
   async delete<T>(endpoint: string): Promise<ApiResponse<T>> {
     try {
-      const response = await fetch(endpoint, {
+      const config: AxiosRequestConfig = {
         method: 'DELETE',
         headers: this.getAuthHeaders(),
-      });
+      };
 
-      return await this.handleResponse<T>(response);
+      const response = await axios(endpoint, config);
+      return this.handleResponse<T>(response);
     } catch (error) {
       console.error('DELETE request error:', error);
-      throw error;
+      this.handleError(error);
     }
   }
 
@@ -203,6 +190,13 @@ class ApiService {
     updateStatus: (id: string, status: string) => this.patch(API_ENDPOINTS.providers.updateStatus.url(id), { status }),
     delete: (id: string) => this.delete(API_ENDPOINTS.providers.delete.url(id)),
     search: (params: any) => this.get(API_ENDPOINTS.providers.search.url, params),
+    checkPhone: (phone: string) =>
+      this.get<{ exists: boolean; provider: any }>(API_ENDPOINTS.providers.checkPhone.url, { phone }),
+    verifyOTP: (phone: string, otp: string) =>
+      this.post<{ success: boolean; message?: string }>(
+        `${API_ENDPOINTS.providers.register.url.replace('/providers', '/providers/verify-otp')}`,
+        { phone, otp }
+      ),
   };
 
   /**
@@ -257,6 +251,26 @@ class ApiService {
     getMessages: (params?: any) => this.get(API_ENDPOINTS.messages.getMessages.url, params),
     sendMessage: (messageData: any) => this.post(API_ENDPOINTS.messages.sendMessage.url, messageData),
     getMessage: (id: string) => this.get(API_ENDPOINTS.messages.getMessage.url(id)),
+  };
+
+  /**
+   * OTP APIs (WhatsApp via Twilio)
+   */
+  otp = {
+    send: (phoneNumber: string) =>
+      this.post<{ success: boolean; message?: string }>(
+        API_ENDPOINTS.otp.send.url,
+        { phoneNumber }
+      ),
+    verify: (phoneNumber: string, code: string) =>
+      this.post<{ success: boolean; message?: string }>(
+        API_ENDPOINTS.otp.verify.url,
+        { phoneNumber, code }
+      ),
+    status: () =>
+      this.get<{ success: boolean; data: any }>(
+        API_ENDPOINTS.otp.status.url
+      ),
   };
 }
 

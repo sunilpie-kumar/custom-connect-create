@@ -88,6 +88,12 @@ export const API_ENDPOINTS = {
       method: 'GET',
       description: 'Search providers by criteria',
       parameters: ['query', 'filters']
+    },
+    checkPhone: {
+      url: `${API_BASE_URL}/providers/check-phone`,
+      method: 'GET',
+      description: 'Check if provider exists by phone number',
+      parameters: ['phone']
     }
   },
 
@@ -176,6 +182,28 @@ export const API_ENDPOINTS = {
       method: 'GET',
       description: 'Get specific message by ID',
       parameters: ['id']
+    }
+  },
+
+  // OTP APIs (WhatsApp via Twilio)
+  otp: {
+    send: {
+      url: `${API_BASE_URL}/otp/send`,
+      method: 'POST',
+      description: 'Send WhatsApp OTP to phone number (with country code)',
+      parameters: ['phoneNumber (e.g., +919620548555)']
+    },
+    verify: {
+      url: `${API_BASE_URL}/otp/verify`,
+      method: 'POST',
+      description: 'Verify WhatsApp OTP code',
+      parameters: ['phoneNumber (e.g., +919620548555)', 'code']
+    },
+    status: {
+      url: `${API_BASE_URL}/otp/status`,
+      method: 'GET',
+      description: 'Check Twilio service status',
+      parameters: []
     }
   }
 } as const;
